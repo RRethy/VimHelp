@@ -10,4 +10,5 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(AppModule::class))
 interface AppComponent {
     fun inject(app: VimHelpApp)
+    fun plus(activity: MainActivity): MainActivitySubcomponent
 }
