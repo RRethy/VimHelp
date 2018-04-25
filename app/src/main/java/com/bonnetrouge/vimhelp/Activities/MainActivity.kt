@@ -1,7 +1,8 @@
-package com.bonnetrouge.vimhelp
+package com.bonnetrouge.vimhelp.Activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.bonnetrouge.vimhelp.R
 
 class MainActivity : AppCompatActivity() {
 
