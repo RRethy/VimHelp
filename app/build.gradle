@@ -33,4 +33,6 @@ dependencies {
     // Dependency injection library: Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    implementation 'com.android.support:design:27.1.1'
 }
