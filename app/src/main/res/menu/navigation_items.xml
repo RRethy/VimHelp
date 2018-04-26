@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/action_search"
+	<item android:id="@+id/item_vim"
 		  android:title="Vim"
+		  android:checked="false"
 		  android:icon="@drawable/ic_vim_logo_svg_vector"/>
-	<item android:id="@+id/action_settings"
+	<item android:id="@+id/item_neovim"
 		  android:title="Neovim"
+		  android:checked="true"
 		  android:icon="@drawable/ic_neovim_colored"/>
-	<item android:id="@+id/action_navigation"
+	<item android:id="@+id/item_bookmarks"
 		  android:title="Bookmarks"
+		  android:checked="false"
 		  android:icon="@drawable/ic_bookmark_border_black_24dp"/>
 </menu>

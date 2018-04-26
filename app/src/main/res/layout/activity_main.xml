@@ -4,6 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	tools:context=".Activities.MainActivity">
 
 	<FrameLayout
@@ -11,4 +12,13 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 	</FrameLayout>
+
+	<android.support.design.widget.BottomNavigationView
+		android:id="@+id/bottomNav"
+		android:layout_width="match_parent"
+		android:layout_height="56dp"
+		android:background="@android:color/white"
+		android:elevation="10dp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:menu="@menu/navigation_items"/>
 </android.support.constraint.ConstraintLayout>
