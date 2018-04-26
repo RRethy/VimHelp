@@ -10,5 +10,7 @@
 		android:layout_width="match_parent"
 		android:layout_gravity="bottom"
 		android:layout_height="56dp"
+		android:background="@android:color/white"
+		android:elevation="10dp"
 		app:menu="@menu/navigation_items"/>
 </FrameLayout>
