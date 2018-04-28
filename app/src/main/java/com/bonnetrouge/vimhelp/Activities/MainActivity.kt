@@ -3,6 +3,9 @@ package com.bonnetrouge.vimhelp.Activities
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.app
 import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
@@ -34,5 +37,20 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.options_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_settings -> {
+                Toast.makeText(this, "Clicked settings", Toast.LENGTH_SHORT)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
