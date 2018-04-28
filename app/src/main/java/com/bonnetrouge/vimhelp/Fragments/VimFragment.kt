@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bonnetrouge.vimhelp.R
+import kotlinx.android.synthetic.main.fragment_vim.*
 import javax.inject.Inject
 
 class VimFragment @Inject constructor() : Fragment() {
@@ -15,5 +16,6 @@ class VimFragment @Inject constructor() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vimWebview.loadUrl("http://vimdoc.sourceforge.net/htmldoc/help.html")
     }
 }
