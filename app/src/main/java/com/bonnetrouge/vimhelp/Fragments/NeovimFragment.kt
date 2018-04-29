@@ -2,15 +2,13 @@ package com.bonnetrouge.vimhelp.Fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Interfaces.OnBackPressedListener
 import com.bonnetrouge.vimhelp.R
-import com.bonnetrouge.vimhelp.WebViewClients.NvimWebViewClient
+import com.bonnetrouge.vimhelp.WebViewClients.BrowsingDocsWebClient
 import kotlinx.android.synthetic.main.fragment_neovim.*
 import javax.inject.Inject
 
@@ -26,7 +24,7 @@ class NeovimFragment @Inject constructor() : Fragment(), OnBackPressedListener {
         webView.settings.displayZoomControls = false
         webView.settings.useWideViewPort = true
         webView.setInitialScale(200)
-        webView.webViewClient = NvimWebViewClient(activity as Context)
+        webView.webViewClient = BrowsingDocsWebClient(activity as Context)
         webView.loadUrl("file:///android_asset/neovim/help.html")
     }
 
