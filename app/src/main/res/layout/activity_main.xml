@@ -20,7 +20,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="56dp"
 		android:background="@android:color/white"
-		android:elevation="10dp"
+		android:elevation="30dp"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:menu="@menu/navigation_items"/>
 </android.support.constraint.ConstraintLayout>
