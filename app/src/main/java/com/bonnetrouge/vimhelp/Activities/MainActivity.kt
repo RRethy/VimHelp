@@ -2,17 +2,16 @@ package com.bonnetrouge.vimhelp.Activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.app
-import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
 import com.bonnetrouge.vimhelp.Fragments.BookmarksFragment
 import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
 import com.bonnetrouge.vimhelp.Fragments.VimFragment
+import com.bonnetrouge.vimhelp.Interfaces.OnBackPressedListener
 import com.bonnetrouge.vimhelp.R
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -28,14 +27,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         app.component.plus(MainActivityModule()).inject(this)
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
-            fragmentTransaction { add(R.id.fragmentContainer, neovimFragment) }
+            fragmentTransaction(false) { add(R.id.fragmentContainer, neovimFragment) }
             bottomNav.selectedItemId = R.id.item_neovim
         }
         bottomNav.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.item_vim -> fragmentTransaction { replace(R.id.fragmentContainer, vimFragment) }
-                R.id.item_neovim -> fragmentTransaction { replace(R.id.fragmentContainer, neovimFragment) }
-                R.id.item_bookmarks -> fragmentTransaction { replace(R.id.fragmentContainer, bookmarksFragment) }
+                R.id.item_vim -> fragmentTransaction(false) { replace(R.id.fragmentContainer, vimFragment) }
+                R.id.item_neovim -> fragmentTransaction(false) { replace(R.id.fragmentContainer, neovimFragment) }
+                R.id.item_bookmarks -> fragmentTransaction(false) { replace(R.id.fragmentContainer, bookmarksFragment) }
             }
             true
         }
@@ -58,5 +57,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) is OnBackPressedListener) {
+            if ((supportFragmentManager.findFragmentById(R.id.fragmentContainer) as OnBackPressedListener).onBackPressed())
+                return
+        }
+        super.onBackPressed()
     }
 }
