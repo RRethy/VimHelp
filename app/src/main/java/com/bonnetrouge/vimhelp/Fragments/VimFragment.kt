@@ -16,11 +16,6 @@ class VimFragment @Inject constructor() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        webView.settings.javaScriptEnabled = true
-        webView.settings.setSupportZoom(true)
-        webView.settings.builtInZoomControls = true
-        webView.setInitialScale(100)
-        webView.settings.useWideViewPort = true
-        webView.loadUrl("http://vimdoc.sourceforge.net/htmldoc/help.html")
     }
+
 }

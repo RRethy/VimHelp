@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bonnetrouge.vimhelp.R
+import com.bonnetrouge.vimhelp.WebViewClients.NvimWebViewClient
 import kotlinx.android.synthetic.main.fragment_neovim.*
 import javax.inject.Inject
 
@@ -16,11 +17,12 @@ class NeovimFragment @Inject constructor() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        webView.settings.javaScriptEnabled = true
         webView.settings.setSupportZoom(true)
         webView.settings.builtInZoomControls = true
-        webView.setInitialScale(100)
+        webView.settings.displayZoomControls = false
         webView.settings.useWideViewPort = true
-        webView.loadUrl("https://neovim.io/doc/user/")
+        webView.setInitialScale(100)
+        webView.webViewClient = NvimWebViewClient()
+        webView.loadUrl("file:///android_asset/help.html")
     }
 }
