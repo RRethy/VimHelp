@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+  </head>
+  <body>
+                <img src="images/logo@2x.png" id="navbar-logo" alt="Neovim">
+
+    <div class="container">
+      <h1>Vim documentation: vim_diff</h1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+*<A NAME="vim_diff.txt"></A><B>vim_diff.txt</B>*    Nvim
+
+
+			    NVIM REFERENCE MANUAL
+
+
+
+Differences between Nvim and Vim			       *<A NAME="vim-differences"></A><B>vim-differences</B>*
+
+Nvim differs from Vim in many ways, big and small.  This document is
+a complete and centralized reference of those differences.
+
+				      Type |<A HREF="various.html#gO">gO</A>| to see the table of contents.
+
+==============================================================================
+
+1. Configuration					    *<A NAME="nvim-configuration"></A><B>nvim-configuration</B>*
+
+- Use `$XDG_CONFIG_HOME/nvim/init.vim` instead of `.vimrc` for storing
+  configuration.
+- Use `$XDG_CONFIG_HOME/nvim` instead of `.vim` to store configuration files.
+- Use `$XDG_DATA_HOME/nvim/shada/main.shada` instead of `.viminfo` for persistent
+  session information.
+
+==============================================================================
+
+2. Defaults					            *<A NAME="nvim-defaults"></A><B>nvim-defaults</B>*
+
+- <A HREF="autocmd.html#Syntax">Syntax</A> highlighting is enabled by default
+- &quot;<A HREF="filetype.html#:filetype">:filetype</A> <A HREF="usr_05.html#plugin">plugin</A> indent on&quot; is enabled by default
+
+- <A HREF="options.html#'autoindent'">'autoindent'</A> is set by default
+- <A HREF="options.html#'autoread'">'autoread'</A> is set by default
+- <A HREF="options.html#'backspace'">'backspace'</A> defaults to &quot;indent,eol,start&quot;
+- <A HREF="options.html#'backupdir'">'backupdir'</A> defaults to .,~/.local/share/nvim/backup (|<A HREF="starting.html#xdg">xdg</A>|)
+- <A HREF="options.html#'belloff'">'belloff'</A> defaults to &quot;all&quot;
+- <A HREF="options.html#'complete'">'complete'</A> doesn't include &quot;<A HREF="insert.html#i">i</A>&quot;
+- <A HREF="deprecated.html#'cscopeverbose'">'cscopeverbose'</A> is enabled
+- <A HREF="options.html#'directory'">'directory'</A> defaults to ~/.local/share/nvim/swap// (|<A HREF="starting.html#xdg">xdg</A>|), auto-created
+- <A HREF="options.html#'display'">'display'</A> defaults to &quot;lastline,msgsep&quot;
+- <A HREF="options.html#'fillchars'">'fillchars'</A> defaults (in effect) to &quot;vert:│,fold:·&quot;
+- <A HREF="options.html#'formatoptions'">'formatoptions'</A> defaults to &quot;tcqj&quot;
+- <A HREF="options.html#'history'">'history'</A> defaults to 10000 (the maximum)
+- <A HREF="options.html#'hlsearch'">'hlsearch'</A> is set by default
+- <A HREF="options.html#'incsearch'">'incsearch'</A> is set by default
+- <A HREF="deprecated.html#'langnoremap'">'langnoremap'</A> is enabled by default
+- <A HREF="options.html#'langremap'">'langremap'</A> is disabled by default
+- <A HREF="options.html#'laststatus'">'laststatus'</A> defaults to 2 (statusline is always shown)
+- <A HREF="options.html#'listchars'">'listchars'</A> defaults to &quot;tab:&gt; ,trail:-,nbsp:+&quot;
+- <A HREF="#'nocompatible'">'nocompatible'</A> is always set
+- <A HREF="options.html#'nrformats'">'nrformats'</A> defaults to &quot;bin,hex&quot;
+- <A HREF="options.html#'ruler'">'ruler'</A> is set by default
+- <A HREF="options.html#'sessionoptions'">'sessionoptions'</A> doesn't include &quot;<A HREF="options.html#options">options</A>&quot;
+- <A HREF="options.html#'showcmd'">'showcmd'</A> is set by default
+- <A HREF="options.html#'sidescroll'">'sidescroll'</A> defaults to 1
+- <A HREF="options.html#'smarttab'">'smarttab'</A> is set by default
+- <A HREF="options.html#'tabpagemax'">'tabpagemax'</A> defaults to 50
+- <A HREF="options.html#'tags'">'tags'</A> defaults to &quot;./tags;,tags&quot;
+- <A HREF="options.html#'ttyfast'">'ttyfast'</A> is always set
+- <A HREF="options.html#'undodir'">'undodir'</A> defaults to ~/.local/share/nvim/undo (|<A HREF="starting.html#xdg">xdg</A>|), auto-created
+- <A HREF="deprecated.html#'viminfo'">'viminfo'</A> includes &quot;<A HREF="change.html#!">!</A>&quot;
+- <A HREF="options.html#'wildmenu'">'wildmenu'</A> is set by default
+
+==============================================================================
+
+3. New Features						       *<A NAME="nvim-features"></A><B>nvim-features</B>*
+
+<B><FONT color="#54A23D">MAJOR COMPONENTS </FONT></B>
+
+API				|<A HREF="api.html#API">API</A>|
+<A HREF="if_lua.html#Lua">Lua</A> scripting			|<A HREF="if_lua.html#lua">lua</A>|
+Job control			|<A HREF="job_control.html#job-control">job-control</A>|
+Remote plugins			|<A HREF="remote_plugin.html#remote-plugin">remote-plugin</A>|
+Providers
+  Clipboard			|<A HREF="provider.html#provider-clipboard">provider-clipboard</A>|
+  <A HREF="if_pyth.html#Python">Python</A> plugins		|<A HREF="provider.html#provider-python">provider-python</A>|
+  <A HREF="if_ruby.html#Ruby">Ruby</A> plugins			|<A HREF="provider.html#provider-ruby">provider-ruby</A>|
+Shared data			|<A HREF="starting.html#shada">shada</A>|
+Embedded terminal		|<A HREF="nvim_terminal_emulator.html#terminal">terminal</A>|
+VimL parser			|<A HREF="api.html#nvim_parse_expression()">nvim_parse_expression()</A>|
+XDG base directories		|<A HREF="starting.html#xdg">xdg</A>|
+
+<B><FONT color="#54A23D">USER EXPERIENCE  </FONT></B>
+
+Working intuitively and consistently is a major goal of Nvim.
+
+
+							*<A NAME="feature-compile"></A><B>feature-compile</B>*
+- Nvim always includes ALL features, in contrast to Vim (which ships with
+  various combinations of 100+ optional features). Think of <A HREF="motion.html#it">it</A> <A HREF="motion.html#as">as</A> a leaner
+  version of Vim's &quot;HUGE&quot; build. This reduces surface area for bugs, and
+  removes a common source of confusion and friction for users.
+
+- Nvim avoids features that cannot be provided on all platforms; instead that
+  is delegated to external plugins/extensions. E.g. the `-X` platform-specific
+  option is &quot;sometimes&quot; available in Vim (with potential surprises:
+	<A HREF="http://stackoverflow.com/q/14635295">http://stackoverflow.com/q/14635295</A>.
+
+- Vim's internal test <A HREF="eval.html#functions">functions</A> (test_autochdir(), test_settime(), etc.) are
+  not exposed (nor implemented); instead Nvim has a robust <A HREF="api.html#API">API</A>.
+
+- Behaviors, <A HREF="options.html#options">options</A>, documentation are removed if they cost users more time
+  than they save.
+
+Usability details have been improved where the benefit outweighs any
+backwards-compatibility cost. Some examples:
+
+- |<A HREF="various.html#K">K</A>| in help documents can be used like |<A HREF="tagsrch.html#CTRL-]">CTRL-]</A>|.
+- Directories for <A HREF="options.html#'directory'">'directory'</A> and <A HREF="options.html#'undodir'">'undodir'</A> are auto-created.
+- Terminal features such <A HREF="motion.html#as">as</A> <A HREF="options.html#'guicursor'">'guicursor'</A> are enabled where possible.
+
+<B><FONT color="#54A23D">ARCHITECTURE </FONT></B>
+
+External plugins run in separate processes. |<A HREF="remote_plugin.html#remote-plugin">remote-plugin</A>| This improves
+stability and allows those plugins to work without blocking the editor. Even
+&quot;legacy&quot; <A HREF="if_pyth.html#Python">Python</A> and <A HREF="if_ruby.html#Ruby">Ruby</A> plugins which use the old Vim interfaces (|<A HREF="intro.html#if_py">if_py</A>| and
+|<A HREF="intro.html#if_ruby">if_ruby</A>|) run out-of-process.
+
+Platform and I/O facilities are built upon libuv. Nvim benefits from libuv
+features and bug fixes, and other projects benefit from improvements to libuv
+by Nvim developers.
+
+<B><FONT color="#54A23D">FEATURES </FONT></B>
+
+&quot;Outline&quot;: Type |<A HREF="various.html#gO">gO</A>| in |<A HREF="filetype.html#:Man">:Man</A>| and |<A HREF="helphelp.html#:help">:help</A>| pages to see a document outline.
+
+|<A HREF="intro.html#META">META</A>| (ALT) chords are recognized, even in the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A>. Any |<A HREF="intro.html#&lt;M-">&lt;M-</A>| <A HREF="map.html#mapping">mapping</A>
+will work. Some examples: &lt;M-1&gt;, &lt;M-2&gt;, &lt;M-BS&gt;, &lt;M-Del&gt;, &lt;M-Ins&gt;, &lt;M-/&gt;,
+&lt;M-\&gt;, &lt;M-Space&gt;, &lt;M-Enter&gt;, &lt;M-=&gt;, &lt;M--&gt;, &lt;M-?&gt;, &lt;M-$&gt;, <A HREF="eval.html#...">...</A>
+<A HREF="intro.html#META">META</A> chords are case-sensitive: &lt;M-a&gt; and &lt;M-A&gt; are two different <A HREF="intro.html#keycodes">keycodes</A>.
+
+Some `CTRL-SHIFT-...` key chords are distinguished from `CTRL-...` variants
+(even in the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A>). Specifically, the following are known to work:
+  &lt;C-Tab&gt;, &lt;C-S-Tab&gt;, &lt;C-BS&gt;, &lt;C-S-BS&gt;, &lt;C-Enter&gt;, &lt;C-S-Enter&gt;
+
+Options:
+  <A HREF="options.html#'cpoptions'">'cpoptions'</A> flags: |<A HREF="options.html#cpo-_">cpo-_</A>|
+  <A HREF="options.html#'display'">'display'</A> flag `msgsep` to minimize <A HREF="scroll.html#scrolling">scrolling</A> when showing <A HREF="message.html#messages">messages</A>
+  <A HREF="options.html#'guicursor'">'guicursor'</A> works in the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A>
+  <A HREF="options.html#'fillchars'">'fillchars'</A> flag `msgsep` (see <A HREF="options.html#'display'">'display'</A> above)
+  <A HREF="options.html#'inccommand'">'inccommand'</A> shows interactive results for |:substitute|-like commands
+  <A HREF="options.html#'scrollback'">'scrollback'</A>
+  <A HREF="options.html#'statusline'">'statusline'</A> supports unlimited alignment sections
+'tabline' <A HREF="/cdn-cgi/l/email-protection#3a1c19090d017a7c4f54597a5c55551c19090d0162">&#37;@<span class="__cf_email__" data-cfemail="d690a3b8b596b0b9b9">[email&#160;protected]</span>&#37;X</A> can call any function on mouse-click 
+  <A HREF="options.html#'winhighlight'">'winhighlight'</A> window-local highlights
+
+Variables:
+  |<A HREF="eval.html#v:event">v:event</A>|
+  |<A HREF="eval.html#v:exiting">v:exiting</A>|
+  |<A HREF="eval.html#v:progpath">v:progpath</A>| is always absolute (&quot;full&quot;)
+  |<A HREF="eval.html#v:windowid">v:windowid</A>| is always available (for use by external UIs)
+
+Commands:
+  |<A HREF="pi_health.html#:checkhealth">:checkhealth</A>|
+  |<A HREF="windows.html#:drop">:drop</A>| is available on all platforms
+  |<A HREF="filetype.html#:Man">:Man</A>| is available by default, with many improvements such <A HREF="motion.html#as">as</A> completion
+  |<A HREF="editing.html#:tchdir">:tchdir</A>| tab-local |<A HREF="editing.html#current-directory">current-directory</A>|
+
+Functions:
+  |<A HREF="eval.html#dictwatcheradd()">dictwatcheradd()</A>| notifies a callback whenever a |<A HREF="eval.html#Dict">Dict</A>| is modified
+  |<A HREF="eval.html#dictwatcherdel()">dictwatcherdel()</A>|
+  |<A HREF="eval.html#menu_get()">menu_get()</A>|
+  |<A HREF="eval.html#msgpackdump()">msgpackdump()</A>|, |<A HREF="eval.html#msgpackparse()">msgpackparse()</A>| provide msgpack de/serialization
+
+Events:
+  |<A HREF="autocmd.html#DirChanged">DirChanged</A>|
+  |<A HREF="autocmd.html#TabNewEntered">TabNewEntered</A>|
+  |<A HREF="autocmd.html#TermClose">TermClose</A>|
+  |<A HREF="autocmd.html#TermOpen">TermOpen</A>|
+  |<A HREF="autocmd.html#TextYankPost">TextYankPost</A>|
+
+Highlight groups:
+  |<A HREF="syntax.html#hl-NormalNC">hl-NormalNC</A>| highlights non-current <A HREF="windows.html#windows">windows</A>
+  |<A HREF="syntax.html#hl-MsgSeparator">hl-MsgSeparator</A>| highlights separator for scrolled <A HREF="message.html#messages">messages</A>
+  |<A HREF="syntax.html#hl-QuickFixLine">hl-QuickFixLine</A>|
+  |<A HREF="syntax.html#hl-Substitute">hl-Substitute</A>|
+  |<A HREF="syntax.html#hl-TermCursor">hl-TermCursor</A>|
+  |<A HREF="syntax.html#hl-TermCursorNC">hl-TermCursorNC</A>|
+  |<A HREF="syntax.html#hl-Whitespace">hl-Whitespace</A>| highlights <A HREF="options.html#'listchars'">'listchars'</A> <A HREF="pattern.html#whitespace">whitespace</A>
+  |<A HREF="eval.html#expr-highlight">expr-highlight</A>| highlight groups (prefixed with &quot;Nvim&quot;)
+
+<A HREF="cmdline.html#Command-line">Command-line</A> highlighting:
+  The <A HREF="eval.html#expression">expression</A> prompt (|<A HREF="change.html#@=">@=</A>|, |<A HREF="cmdline.html#c_CTRL-R_=">c_CTRL-R_=</A>|, |<A HREF="insert.html#i_CTRL-R_=">i_CTRL-R_=</A>|) is highlighted
+  using a built-in VimL <A HREF="eval.html#expression">expression</A> parser. |<A HREF="eval.html#expr-highlight">expr-highlight</A>|
+
+					*<A NAME="E5408"></A><B>E5408</B>* *<A NAME="E5409"></A><B>E5409</B>*
+  |<A HREF="eval.html#input()">input()</A>|, |<A HREF="eval.html#inputdialog()">inputdialog()</A>| support custom highlighting. |<A HREF="eval.html#input()-highlight">input()-highlight</A>|
+
+					*<A NAME="g:Nvim_color_cmdline"></A><B>g:Nvim_color_cmdline</B>*
+  (Experimental) <A HREF="cmdline.html#Command-line">Command-line</A> (|<A HREF="cmdline.html#:">:</A>|) is colored by callback defined in
+  `g:Nvim_color_cmdline` (this callback is for testing only, and will be
+  removed in the future).
+
+==============================================================================
+
+4. Changed features					 *<A NAME="nvim-features-changed"></A><B>nvim-features-changed</B>*
+
+Nvim always builds with all features, in contrast to Vim which may have
+certain features removed/added at compile-time.  This is like if Vim's &quot;HUGE&quot;
+build was the only Vim release type (except Nvim is smaller than Vim's &quot;HUGE&quot;
+build).
+
+If a <A HREF="if_pyth.html#Python">Python</A> interpreter is available on your `$PATH`, |<A HREF="if_pyth.html#:python">:python</A>| and |<A HREF="if_pyth.html#:python3">:python3</A>|
+are always available and may be used simultaneously in separate plugins.  The
+`neovim` pip package must be installed to use <A HREF="if_pyth.html#Python">Python</A> plugins in Nvim (see
+|<A HREF="provider.html#provider-python">provider-python</A>|).
+
+Because of general |<A HREF="intro.html#256-color">256-color</A>| usage whereever possible, Nvim will even use
+256-colour capability on Linux virtual terminals.  Vim uses only 8 colours
+plus bright foreground on Linux VTs.
+
+Vim combines what is in its |<A HREF="term.html#builtin-terms">builtin-terms</A>| with what <A HREF="motion.html#it">it</A> reads from <A HREF="#termcap">termcap</A>,
+and has a |<A HREF="intro.html#ttybuiltin">ttybuiltin</A>| setting to <A HREF="intro.html#control">control</A> how that combination works.  Nvim
+uses either one or the other of an external |<A HREF="term.html#terminfo">terminfo</A>| entry or the built-in
+one.  It does not attempt to mix data from the two.
+
+|<A HREF="various.html#:!">:!</A>| does not support &quot;interactive&quot; commands. Use |<A HREF="various.html#:terminal">:terminal</A>| instead.
+(GUI Vim has a similar limitation, see &quot;<A HREF="helphelp.html#:help">:help</A> gui-pty&quot; in Vim.)
+
+|<A HREF="eval.html#system()">system()</A>| does not support writing/reading &quot;backgrounded&quot; commands. |<A HREF="eval.html#E5677">E5677</A>|
+
+|<A HREF="various.html#:redir">:redir</A>| nested in |<A HREF="eval.html#execute()">execute()</A>| works.
+
+Nvim may throttle (skip) <A HREF="message.html#messages">messages</A> from shell commands (|<A HREF="various.html#:!">:!</A>|, |<A HREF="quickfix.html#:grep">:grep</A>|, |<A HREF="quickfix.html#:make">:make</A>|)
+if there is too much output. No data is lost, this only affects display and
+makes things faster. |<A HREF="various.html#:terminal">:terminal</A>| output is never throttled.
+
+|<A HREF="eval.html#mkdir()">mkdir()</A>| behaviour changed:
+1. Assuming /tmp/foo does not exist and /tmp can be written to
+   mkdir('/tmp/foo/bar', '<A HREF="change.html#p">p</A>', 0700) will create both /tmp/foo and /tmp/foo/bar 
+   with 0700 permissions. Vim mkdir will create /tmp/foo with 0755.
+2. If you try to create an existing directory with `'p'` (e.g. mkdir('/',
+   'p')) <A HREF="eval.html#mkdir()">mkdir()</A> will silently exit. In Vim this was an error.
+3. <A HREF="eval.html#mkdir()">mkdir()</A> error <A HREF="message.html#messages">messages</A> now include strerror() text when mkdir fails.
+
+<A HREF="options.html#'encoding'">'encoding'</A> is always &quot;<A HREF="mbyte.html#utf-8">utf-8</A>&quot;.
+
+|<A HREF="eval.html#string()">string()</A>| and |<A HREF="eval.html#:echo">:echo</A>| behaviour changed:
+1. No maximum recursion depth limit is applied to nested container
+   structures.
+2. |<A HREF="eval.html#string()">string()</A>| fails immediately on nested containers, not when recursion limit
+   was exceeded.
+2. When |<A HREF="eval.html#:echo">:echo</A>| encounters duplicate containers like
+
+<B>       let l = []</B>
+<B>       echo [l, l]</B>
+ 
+   <A HREF="motion.html#it">it</A> does not use &quot;[...]&quot; (was: &quot;[[], [...]]&quot;, now: &quot;[[], []]&quot;). &quot;<A HREF="eval.html#...">...</A>&quot; is
+   only used for recursive containers.
+3. |<A HREF="eval.html#:echo">:echo</A>| <A HREF="print.html#printing">printing</A> nested containers adds &quot;@level&quot; after &quot;<A HREF="eval.html#...">...</A>&quot; designating
+   the level at which recursive container was printed: |<A HREF="eval.html#:echo-self-refer">:echo-self-refer</A>|.
+   Same thing applies to |<A HREF="eval.html#string()">string()</A>| (though <A HREF="motion.html#it">it</A> uses construct like
+   &quot;{<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="90d5a7a2a4d0fcf5e6f5fc">[email&#160;protected]</a>}&quot;), but this is not reliable because |<A HREF="eval.html#string()">string()</A>| continues to
+   error out.
+4. Stringifyed infinite and NaN values now use |<A HREF="eval.html#str2float()">str2float()</A>| and can be evaled
+   back.
+5. (internal) Trying to print or stringify VAR_UNKNOWN in Vim results in 
+   nothing, |<A HREF="intro.html#E908">E908</A>|, in Neovim <A HREF="motion.html#it">it</A> is internal error.
+
+|<A HREF="eval.html#json_decode()">json_decode()</A>| behaviour changed:
+1. It may output |<A HREF="eval.html#msgpack-special-dict">msgpack-special-dict</A>|.
+2. |<A HREF="eval.html#msgpack-special-dict">msgpack-special-dict</A>| is emitted also in <A HREF="change.html#case">case</A> of duplicate keys, while in 
+   Vim <A HREF="motion.html#it">it</A> <A HREF="message.html#errors">errors</A> out.
+3. It accepts only valid JSON.  Trailing commas are not accepted.
+
+|<A HREF="eval.html#json_encode()">json_encode()</A>| behaviour slightly changed: now |<A HREF="eval.html#msgpack-special-dict">msgpack-special-dict</A>| values 
+are accepted, but |<A HREF="#v:none">v:none</A>| is not.
+
+
+*<A NAME="v:none"></A><B>v:none</B>* variable is absent.  In Vim <A HREF="motion.html#it">it</A> represents “no value” in “js” strings 
+like &quot;[,]&quot; parsed <A HREF="motion.html#as">as</A> &quot;[v:none]&quot; by |<A HREF="#js_decode()">js_decode()</A>|.
+
+
+*<A NAME="js_encode()"></A><B>js_encode()</B>* and *<A NAME="js_decode()"></A><B>js_decode()</B>* <A HREF="eval.html#functions">functions</A> are also absent.
+
+Viminfo text files were replaced with binary (messagepack) ShaDa files.
+Additional differences:
+
+- |<A HREF="options.html#shada-c">shada-c</A>| has no effect.
+- |<A HREF="options.html#shada-s">shada-s</A>| now <A HREF="vi_diff.html#limits">limits</A> size of every item and not just <A HREF="change.html#registers">registers</A>.
+- <A HREF="deprecated.html#'viminfo'">'viminfo'</A> option got renamed to <A HREF="options.html#'shada'">'shada'</A>. Old option is kept <A HREF="motion.html#as">as</A> an alias for
+  compatibility reasons.
+- |<A HREF="deprecated.html#:wviminfo">:wviminfo</A>| was renamed to |<A HREF="starting.html#:wshada">:wshada</A>|, |<A HREF="deprecated.html#:rviminfo">:rviminfo</A>| to |<A HREF="starting.html#:rshada">:rshada</A>|.  Old
+  commands are still kept.
+- ShaDa file format was designed with forward and backward compatibility in
+  mind. |<A HREF="starting.html#shada-compatibility">shada-compatibility</A>|
+- Some <A HREF="message.html#errors">errors</A> make ShaDa code keep temporary file in-place for user to decide
+  what to <A HREF="diff.html#do">do</A> with <A HREF="motion.html#it">it</A>.  Vim deletes temporary file in these cases.
+  |<A HREF="starting.html#shada-error-handling">shada-error-handling</A>|
+- ShaDa file keeps search direction (|<A HREF="eval.html#v:searchforward">v:searchforward</A>|), viminfo does not.
+
+|<A HREF="eval.html#printf()">printf()</A>| returns something meaningful when used with `&#37;p` argument: in Vim 
+<A HREF="motion.html#it">it</A> used to return useless address of the <A HREF="eval.html#string">string</A> (strings are copied to the 
+newly allocated memory all over the place) and fail on types which cannot be 
+coerced to strings. See |<A HREF="eval.html#id()">id()</A>| for more details, currently <A HREF="motion.html#it">it</A> uses 
+`printf(&quot;&#37;p&quot;, {expr})` internally.
+
+|<A HREF="cmdline.html#c_CTRL-R">c_CTRL-R</A>| pasting a non-special <A HREF="sponsor.html#register">register</A> into |<A HREF="intro.html#cmdline">cmdline</A>| omits the last <A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A>.
+
+<A HREF="if_lua.html#Lua">Lua</A> interface (|<A HREF="if_lua.html">if_lua.txt</A>|):
+
+- `:lua print(&quot;a\0b&quot;)` will print `a^@b`, like with `:echomsg &quot;a\nb&quot;` . In Vim 
+  that prints `a` and `b` on separate lines, exactly like
+  `:lua print(&quot;a\nb&quot;)` .
+- `:lua error('TEST')` will print “TEST” <A HREF="motion.html#as">as</A> the error in Vim and “E5105: Error 
+  while calling <A HREF="if_lua.html#lua">lua</A> chunk: [string &quot;&lt;VimL compiled string&gt;&quot;]:1: TEST” in 
+  Neovim.
+- <A HREF="if_lua.html#Lua">Lua</A> has direct access to Nvim |<A HREF="api.html#API">API</A>| via `vim.api`.
+- <A HREF="if_lua.html#Lua">Lua</A> package.path and package.cpath are automatically updated according to
+  <A HREF="options.html#'runtimepath'">'runtimepath'</A>: |<A HREF="if_lua.html#lua-require">lua-require</A>|.
+
+|<A HREF="eval.html#input()">input()</A>| and |<A HREF="eval.html#inputdialog()">inputdialog()</A>| support for each other’s features (return on
+cancel and completion respectively) via dictionary argument (replaces all
+other arguments if used).
+
+|<A HREF="eval.html#input()">input()</A>| and |<A HREF="eval.html#inputdialog()">inputdialog()</A>| support user-defined cmdline highlighting.
+
+Highlight groups:
+  |<A HREF="syntax.html#hl-ColorColumn">hl-ColorColumn</A>|, |<A HREF="syntax.html#hl-CursorColumn">hl-CursorColumn</A>| are lower priority than most other
+  groups
+
+VimL (Vim <A HREF="usr_41.html#script">script</A>) compatibility:
+  `count` does not alias to |<A HREF="eval.html#v:count">v:count</A>|
+
+==============================================================================
+
+5. Missing legacy features				 *<A NAME="nvim-features-missing"></A><B>nvim-features-missing</B>*
+
+Some legacy Vim features are not implemented:
+
+- |if_py|: vim.bindeval() and vim.Function() are not supported
+- |if_lua|: the `vim` object is missing most legacy methods
+
+- *<A NAME="if_perl"></A><B>if_perl</B>*
+
+- *<A NAME="if_mzscheme"></A><B>if_mzscheme</B>*
+
+- *<A NAME="if_tcl"></A><B>if_tcl</B>*
+
+==============================================================================
+
+6. Removed features					 *<A NAME="nvim-features-removed"></A><B>nvim-features-removed</B>*
+
+These Vim features were intentionally removed from Nvim.
+
+
+			*<A NAME="'cp'"></A><B>'cp'</B>* *<A NAME="'nocompatible'"></A><B>'nocompatible'</B>* *<A NAME="'nocp'"></A><B>'nocp'</B>* *<A NAME="'compatible'"></A><B>'compatible'</B>*
+Nvim is always &quot;non-compatible&quot; with <A HREF="intro.html#Vi">Vi</A>.
+  &quot;<A HREF="options.html#:set">:set</A> <A HREF="#'nocompatible'">nocompatible</A>&quot; is ignored
+  &quot;<A HREF="options.html#:set">:set</A> <A HREF="#'compatible'">compatible</A>&quot; is an error
+
+
+			*<A NAME="'ed'"></A><B>'ed'</B>* *<A NAME="'edcompatible'"></A><B>'edcompatible'</B>* *<A NAME="'noed'"></A><B>'noed'</B>* *<A NAME="'noedcompatible'"></A><B>'noedcompatible'</B>*
+Ed-compatible mode:
+  &quot;<A HREF="options.html#:set">:set</A> <A HREF="#'noedcompatible'">noedcompatible</A>&quot; is ignored
+  &quot;<A HREF="options.html#:set">:set</A> <A HREF="#'edcompatible'">edcompatible</A>&quot; is an error
+
+
+			*<A NAME="t_xx"></A><B>t_xx</B>* *<A NAME="termcap-options"></A><B>termcap-options</B>* *<A NAME="t_AB"></A><B>t_AB</B>* *<A NAME="t_Sb"></A><B>t_Sb</B>* *<A NAME="t_vb"></A><B>t_vb</B>* *<A NAME="t_SI"></A><B>t_SI</B>*
+Nvim does not have special `t_XX` <A HREF="options.html#options">options</A> nor &lt;t_XX&gt; <A HREF="intro.html#keycodes">keycodes</A> to configure
+<A HREF="nvim_terminal_emulator.html#terminal">terminal</A> capabilities. Instead Nvim treats the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> <A HREF="motion.html#as">as</A> any other UI. For
+example, <A HREF="options.html#'guicursor'">'guicursor'</A> sets the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> cursor style if possible.
+
+
+			*<A NAME=":set-termcap"></A><B>:set-termcap</B>*
+Start Nvim with <A HREF="options.html#'verbose'">'verbose'</A> level 3 to see the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> capabilities.
+<B>	nvim -V3</B>
+ 
+
+			*<A NAME="'term'"></A><B>'term'</B>* *<A NAME="E529"></A><B>E529</B>* *<A NAME="E530"></A><B>E530</B>* *<A NAME="E531"></A><B>E531</B>*
+<A HREF="#'term'">'term'</A> reflects the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> type derived from |<A HREF="term.html#$TERM">$TERM</A>| and other environment
+checks.  For debugging only; not reliable during <A HREF="starting.html#startup">startup</A>.
+<B>	:echo &amp;term</B>
+&quot;builtin_x&quot; means one of the |<A HREF="term.html#builtin-terms">builtin-terms</A>| was chosen, because the expected
+<A HREF="term.html#terminfo">terminfo</A> file was not found on the system.
+
+
+			*<A NAME="termcap"></A><B>termcap</B>*
+Nvim never uses the <A HREF="#termcap">termcap</A> database, only |<A HREF="term.html#terminfo">terminfo</A>| and |<A HREF="term.html#builtin-terms">builtin-terms</A>|.
+
+
+			*<A NAME="xterm-8bit"></A><B>xterm-8bit</B>* *<A NAME="xterm-8-bit"></A><B>xterm-8-bit</B>*
+Xterm can be run in a mode where <A HREF="motion.html#it">it</A> uses true 8-bit CSI.  Supporting this
+requires autodetection of whether the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> is in <A HREF="mbyte.html#UTF-8">UTF-8</A> mode or non-UTF-8
+mode, <A HREF="motion.html#as">as</A> the 8-bit CSI character has to be written differently in each <A HREF="change.html#case">case</A>.
+Vim issues a &quot;request version&quot; sequence to the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> at <A HREF="starting.html#startup">startup</A> and looks
+at how the <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> is sending CSI.  Nvim does not issue such a sequence and
+always uses 7-bit <A HREF="intro.html#control">control</A> sequences.
+
+<A HREF="options.html#'ttyfast'">'ttyfast'</A>:
+  &quot;<A HREF="options.html#:set">:set</A> <A HREF="options.html#'ttyfast'">ttyfast</A>&quot; is ignored
+  &quot;<A HREF="options.html#:set">:set</A> <A HREF="options.html#'nottyfast'">nottyfast</A>&quot; is an error
+
+Encryption support:
+
+  *<A NAME="'cryptmethod'"></A><B>'cryptmethod'</B>* *<A NAME="'cm'"></A><B>'cm'</B>*
+
+  *<A NAME="'key'"></A><B>'key'</B>*
+
+MS-DOS support:
+  'bioskey'
+  'conskey'
+
+Test <A HREF="eval.html#functions">functions</A>:
+  test_alloc_fail()
+  test_autochdir()
+  <A HREF="eval.html#test_garbagecollect_now()">test_garbagecollect_now()</A>
+  test_null_channel()
+  test_null_dict()
+  test_null_job()
+  test_null_list()
+  test_null_partial()
+  test_null_string()
+  test_override()
+  test_settime()
+
+Other <A HREF="options.html#options">options</A>:
+  'antialias'
+  <A HREF="options.html#'cpoptions'">'cpoptions'</A> (g <A HREF="motion.html#j">j</A> <A HREF="motion.html#k">k</A> <A HREF="motion.html#H">H</A> <A HREF="motion.html#w">w</A> <A HREF="change.html#&lt;">&lt;</A> &#42; - and all POSIX flags were removed)
+  <A HREF="options.html#'encoding'">'encoding'</A> (&quot;utf-8&quot; is always used)
+  'esckeys'
+  <A HREF="options.html#'guioptions'">'guioptions'</A> &quot;<A HREF="motion.html#t">t</A>&quot; flag was removed
+
+  *<A NAME="'guipty'"></A><B>'guipty'</B>* (Nvim uses pipes and PTYs consistently on all platforms.)
+  <A HREF="deprecated.html#'highlight'">'highlight'</A> (Names of builtin |<A HREF="syntax.html#highlight-groups">highlight-groups</A>| cannot be changed.)
+
+  *<A NAME="'imactivatefunc'"></A><B>'imactivatefunc'</B>* *<A NAME="'imaf'"></A><B>'imaf'</B>*
+
+  *<A NAME="'imactivatekey'"></A><B>'imactivatekey'</B>* *<A NAME="'imak'"></A><B>'imak'</B>*
+
+  *<A NAME="'imstatusfunc'"></A><B>'imstatusfunc'</B>* *<A NAME="'imsf'"></A><B>'imsf'</B>*
+
+  *<A NAME="'macatsui'"></A><B>'macatsui'</B>*
+
+  *<A NAME="'restorescreen'"></A><B>'restorescreen'</B>* *<A NAME="'rs'"></A><B>'rs'</B>* *<A NAME="'norestorescreen'"></A><B>'norestorescreen'</B>* *<A NAME="'nors'"></A><B>'nors'</B>*
+  'shelltype'
+
+  *<A NAME="'shortname'"></A><B>'shortname'</B>* *<A NAME="'sn'"></A><B>'sn'</B>* *<A NAME="'noshortname'"></A><B>'noshortname'</B>* *<A NAME="'nosn'"></A><B>'nosn'</B>*
+
+  *<A NAME="'swapsync'"></A><B>'swapsync'</B>* *<A NAME="'sws'"></A><B>'sws'</B>*
+
+  *<A NAME="'termencoding'"></A><B>'termencoding'</B>* *<A NAME="'tenc'"></A><B>'tenc'</B>* (Vim 7.4.852 also removed this for Windows)
+  'textauto'
+  'textmode'
+
+  *<A NAME="'toolbar'"></A><B>'toolbar'</B>* *<A NAME="'tb'"></A><B>'tb'</B>*
+
+  *<A NAME="'toolbariconsize'"></A><B>'toolbariconsize'</B>* *<A NAME="'tbis'"></A><B>'tbis'</B>*
+
+  *<A NAME="'ttybuiltin'"></A><B>'ttybuiltin'</B>* *<A NAME="'tbi'"></A><B>'tbi'</B>* *<A NAME="'nottybuiltin'"></A><B>'nottybuiltin'</B>* *<A NAME="'notbi'"></A><B>'notbi'</B>*
+
+  *<A NAME="'ttymouse'"></A><B>'ttymouse'</B>* *<A NAME="'ttym'"></A><B>'ttym'</B>*
+
+  *<A NAME="'ttyscroll'"></A><B>'ttyscroll'</B>* *<A NAME="'tsl'"></A><B>'tsl'</B>*
+
+  *<A NAME="'ttytype'"></A><B>'ttytype'</B>* *<A NAME="'tty'"></A><B>'tty'</B>*
+  'weirdinvert'
+
+Other commands:
+  :Print
+  :fixdel
+  :helpfind
+  <A HREF="windows.html#:mode">:mode</A> (no longer accepts an argument)
+  :open
+  <A HREF="various.html#:shell">:shell</A>
+  :smile
+  :tearoff
+
+Other compile-time features:
+  EBCDIC
+  Emacs <A HREF="tagsrch.html#tags">tags</A> support
+  X11 integration (see |<A HREF="provider.html#x11-selection">x11-selection</A>|)
+
+Nvim does not have a built-in <A HREF="gui.html#GUI">GUI</A> and hence the following aliases have been
+removed: gvim, gex, gview, rgvim, rgview
+
+&quot;Easy mode&quot; (eview, evim, <A HREF="nvim.html#nvim">nvim</A> -y)
+&quot;(g)vimdiff&quot; (alias for &quot;(g)nvim -d&quot; |<A HREF="diff.html#diff-mode">diff-mode</A>|)
+&quot;<A HREF="intro.html#Vi">Vi</A> mode&quot; (nvim <A HREF="starting.html#-v">-v</A>)
+
+The ability to start <A HREF="nvim.html#nvim">nvim</A> via the following aliases has been removed in favor
+of just using their command line arguments:
+
+  ex        <A HREF="nvim.html#nvim">nvim</A> <A HREF="starting.html#-e">-e</A>
+  exim      <A HREF="nvim.html#nvim">nvim</A> <A HREF="starting.html#-E">-E</A>
+  view      <A HREF="nvim.html#nvim">nvim</A> <A HREF="starting.html#-R">-R</A>
+  rvim      <A HREF="nvim.html#nvim">nvim</A> <A HREF="starting.html#-Z">-Z</A>
+  rview     <A HREF="nvim.html#nvim">nvim</A> -RZ
+
+==============================================================================
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+    </div>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/d07b1474/cloudflare-static/email-decode.min.js"></script></body>
+</html>

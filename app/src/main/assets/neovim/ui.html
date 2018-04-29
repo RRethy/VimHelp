@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+  </head>
+  <body>
+                <img src="images/logo@2x.png" id="navbar-logo" alt="Neovim">
+
+    <div class="container">
+      <h1>Vim documentation: ui</h1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+*<A NAME="ui.txt"></A><B>ui.txt</B>*	Nvim
+
+
+			    NVIM REFERENCE MANUAL
+
+
+
+Nvim UI protocol							  *<A NAME="ui"></A><B>ui</B>*
+
+                                      Type |<A HREF="various.html#gO">gO</A>| to see the table of contents.
+
+==============================================================================
+
+UI Events							    *<A NAME="ui-events"></A><B>ui-events</B>*
+
+GUIs can be implemented <A HREF="motion.html#as">as</A> external processes communicating with Nvim over the
+<A HREF="msgpack_rpc.html#RPC">RPC</A> <A HREF="api.html#API">API</A>. The UI model consists of a terminal-like grid with a single,
+monospace font size. Some elements (UI &quot;widgets&quot;) can be drawn separately from
+the grid (&quot;externalized&quot;).
+
+
+								  *<A NAME="ui-options"></A><B>ui-options</B>*
+After connecting to Nvim (usually a spawned, embedded instance) use the
+|<A HREF="intro.html#nvim_ui_attach">nvim_ui_attach</A>| <A HREF="api.html#API">API</A> method to tell Nvim that your program wants to draw the
+Nvim screen grid with a size of width × height cells. `options` must be
+a dictionary with these (optional) keys:
+	`rgb`			Decides the color format.
+				Set true (default) for 24-bit RGB colors.
+				Set false for <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> colors (max of 256).
+
+							      *<A NAME="ui-ext-options"></A><B>ui-ext-options</B>*
+	`ext_popupmenu`		Externalize the popupmenu. |<A HREF="#ui-popupmenu">ui-popupmenu</A>|
+	`ext_tabline`		Externalize the tabline. |<A HREF="#ui-tabline">ui-tabline</A>|
+	`ext_cmdline`		Externalize the cmdline. |<A HREF="#ui-cmdline">ui-cmdline</A>|
+	`ext_wildmenu`		Externalize the wildmenu. |<A HREF="intro.html#ui-ext-wildmenu">ui-ext-wildmenu</A>|
+
+Specifying a non-existent option is an error. To facilitate an <A HREF="#ui">ui</A> that
+supports different versions of Nvim, the |<A HREF="api.html#api-metadata">api-metadata</A>| key `ui_options`
+contains the <A HREF="eval.html#list">list</A> of supported <A HREF="options.html#options">options</A>. Additionally Nvim currently requires
+that all connected UIs use the same set of widgets. Therefore the active
+widgets will be the intersection of the requested widget sets of all connected
+UIs. The &quot;option_set&quot; event will be used to specify which widgets actually are
+active.
+
+After attaching, Nvim will send <A HREF="msgpack_rpc.html#msgpack-rpc">msgpack-rpc</A> notifications, with the method
+name &quot;redraw&quot; and a single argument, an array of screen update events.  Update
+events are arrays whose first element is the event name and remaining elements
+are each tuples of event parameters. This allows multiple events of the same
+kind to be sent in a row without the event name being repeated. This batching
+is mostly used for &quot;put&quot;, <A HREF="motion.html#as">as</A> each &quot;put&quot; event just puts contents in one screen
+cell, but clients must be prepared for multiple argument sets being batched
+for all event kinds.
+
+Events must be handled in order. The user should only see the updated screen
+state after all events in the same &quot;redraw&quot; batch are processed (not any
+intermediate state after processing only part of the array).
+
+Nvim sends |<A HREF="#ui-global">ui-global</A>| and |<A HREF="#ui-grid">ui-grid</A>| events unconditionally; these suffice to
+implement a terminal-like interface.
+
+Nvim optionally sends screen elements &quot;semantically&quot; <A HREF="motion.html#as">as</A> structured events
+instead of raw grid-lines. Then the UI must decide how to present those
+elements itself; Nvim will not draw those elements on the grid. This is
+controlled by the |<A HREF="#ui-ext-options">ui-ext-options</A>|.
+
+Future versions of Nvim may add new update kinds and may append new parameters
+to existing update kinds. Clients must be prepared to ignore such extensions
+to be forward-compatible. |<A HREF="api.html#api-contract">api-contract</A>|
+
+==============================================================================
+
+Global Events							    *<A NAME="ui-global"></A><B>ui-global</B>*
+
+[&quot;set_title&quot;, title]
+[&quot;set_icon&quot;, icon]
+	Set the <A HREF="windows.html#window">window</A> title, and icon (minimized) <A HREF="windows.html#window">window</A> title, respectively.
+	In windowing systems not distinguishing between the two, &quot;set_icon&quot;
+	can be ignored.
+
+[&quot;mode_info_set&quot;, cursor_style_enabled, mode_info]
+	`cursor_style_enabled` is a <A HREF="options.html#boolean">boolean</A> indicating if the UI should set
+	the cursor style. `mode_info` is a <A HREF="eval.html#list">list</A> of mode property maps. The
+	current mode is given by the `mode_idx` field of the `mode_change`
+	event.
+
+	Each mode property map may contain these keys:
+
+<B><FONT color="#54A23D">	KEY		DESCRIPTION </FONT></B>
+	`cursor_shape`:	&quot;block&quot;, &quot;horizontal&quot;, &quot;vertical&quot;
+	`cell_percentage`: Cell <A HREF="motion.html#&#37;">&#37;</A> occupied by the cursor.
+	`blinkwait`, `blinkon`, `blinkoff`: See |<A HREF="options.html#cursor-blinking">cursor-blinking</A>|.
+	`hl_id`:	Cursor highlight group.
+	`hl_lm`:	Cursor highlight group if <A HREF="options.html#'langmap'">'langmap'</A> is active.
+	`short_name`:	Mode code name, see <A HREF="options.html#'guicursor'">'guicursor'</A>.
+	`name`:		Mode descriptive name.
+	`mouse_shape`:	(To be implemented.)
+
+	Some keys are missing in some modes.
+
+[&quot;option_set&quot;, name, value]
+	The value of <A HREF="#ui">ui</A> related option `name` changed. The sent <A HREF="options.html#options">options</A> are
+	listed below:
+
+	<A HREF="options.html#'arabicshape'">'arabicshape'</A>
+	'ambiwith'
+	<A HREF="options.html#'emoji'">'emoji'</A>
+	<A HREF="options.html#'guifont'">'guifont'</A>
+	<A HREF="options.html#'guifontset'">'guifontset'</A>
+	<A HREF="options.html#'guifontwide'">'guifontwide'</A>
+	<A HREF="options.html#'linespace'">'linespace'</A>
+	<A HREF="options.html#'showtabline'">'showtabline'</A>
+	<A HREF="options.html#'termguicolors'">'termguicolors'</A>
+	`ext_*` (all |<A HREF="#ui-ext-options">ui-ext-options</A>|)
+
+	Options are not added to the <A HREF="eval.html#list">list</A> if their effects are already taken
+	care of. For instance, instead of forwarding the raw <A HREF="options.html#'mouse'">'mouse'</A> option
+	value, `mouse_on` and `mouse_off` directly indicate if mouse support
+	is active right now. Some <A HREF="options.html#options">options</A> like 'ambiwith' have already taken
+	effect on the grid, where appropriate empty cells are added, however
+	an <A HREF="#ui">ui</A> might still use these <A HREF="options.html#options">options</A> when rendering raw text sent from
+	Nvim, like the text of the cmdline when |<A HREF="intro.html#ui-ext-cmdline">ui-ext-cmdline</A>| is set.
+
+[&quot;mode_change&quot;, mode, mode_idx]
+	The mode changed.  The first parameter `mode` is a <A HREF="eval.html#string">string</A> representing
+	the current mode. `mode_idx` is an index into the array received in
+	the `mode_info_set` event. UIs should change the cursor style
+	according to the properties specified in the corresponding item. The
+	set of modes reported will change in new versions of Nvim, for
+	instance more submodes and temporary states might be represented <A HREF="motion.html#as">as</A>
+	separate modes.
+
+[&quot;mouse_on&quot;]
+[&quot;mouse_off&quot;]
+	Tells the client whether mouse support, <A HREF="motion.html#as">as</A> determined by |<A HREF="options.html#'mouse'">'mouse'</A>|
+	option, is considered to be active in the current mode. This is mostly
+	useful for a <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> frontend, or other situations where <A HREF="nvim.html#nvim">nvim</A> mouse
+	would conflict with other usages of the mouse. It is safe for a client
+	to ignore this and always send mouse events.
+
+[&quot;busy_on&quot;]
+[&quot;busy_off&quot;]
+	Nvim started or stopped being busy, and possibly not responsive to
+	user input. This could be indicated to the user by hiding the cursor.
+
+[&quot;suspend&quot;]
+	|<A HREF="starting.html#:suspend">:suspend</A>| command or |<A HREF="intro.html#Ctrl-Z">Ctrl-Z</A>| <A HREF="map.html#mapping">mapping</A> is used. A <A HREF="nvim_terminal_emulator.html#terminal">terminal</A> client (or other
+	client where <A HREF="motion.html#it">it</A> makes sense) could <A HREF="starting.html#suspend">suspend</A> itself.  Other clients can
+	safely ignore <A HREF="motion.html#it">it</A>.
+
+[&quot;update_menu&quot;]
+	The menu mappings changed.
+
+[&quot;bell&quot;]
+[&quot;visual_bell&quot;]
+	Notify the user with an audible or visual bell, respectively.
+
+==============================================================================
+
+Grid Events							      *<A NAME="ui-grid"></A><B>ui-grid</B>*
+
+[&quot;resize&quot;, width, height]
+	The grid is resized to `width` and `height` cells.
+
+[&quot;clear&quot;]
+	Clear the grid.
+
+[&quot;eol_clear&quot;]
+	Clear from the cursor position to the end of the current line.
+
+[&quot;cursor_goto&quot;, row, col]
+	Move the cursor to position (row, col). Currently, the same cursor is
+	used to define the position for text insertion and the visible cursor.
+	However, only the last cursor position, after processing the entire
+	array in the &quot;redraw&quot; event, is intended to be a visible cursor
+	position.
+
+[&quot;update_fg&quot;, color]
+[&quot;update_bg&quot;, color]
+[&quot;update_sp&quot;, color]
+	Set the default foreground, background and special colors
+	respectively.
+
+
+						      *<A NAME="ui-event-highlight_set"></A><B>ui-event-highlight_set</B>*
+[&quot;highlight_set&quot;, attrs]
+	Set the attributes that the next text put on the grid will have.
+	`attrs` is a <A HREF="eval.html#dict">dict</A> with the keys below. Any absent key is reset
+	to its default value. Color defaults are set by the `update_fg` etc
+	updates. All <A HREF="options.html#boolean">boolean</A> keys default to false.
+
+	`foreground`:	foreground color.
+	`background`:	backround color.
+	`special`:	color to use for <A HREF="syntax.html#underline">underline</A> and <A HREF="syntax.html#undercurl">undercurl</A>, when present.
+	`reverse`:	reverse video. Foreground and background colors are
+			switched.
+	`italic`:	<A HREF="syntax.html#italic">italic</A> text.
+	`bold`:		<A HREF="syntax.html#bold">bold</A> text.
+	`underline`:	underlined text. The line has `special` color.
+	`undercurl`:	undercurled text. The curl has `special` color.
+
+[&quot;put&quot;, text]
+	The (utf-8 encoded) <A HREF="eval.html#string">string</A> `text` is put at the cursor position
+	(and the cursor is advanced), with the highlights <A HREF="motion.html#as">as</A> set by the
+	last `highlight_set` update.
+
+[&quot;set_scroll_region&quot;, top, bot, left, right]
+	Define the scroll region used by `scroll` below.
+
+[&quot;scroll&quot;, count]
+	Scroll the text in the scroll region. The diagrams below illustrate
+	what will happen, depending on the scroll direction. &quot;<A HREF="change.html#=">=</A>&quot; is used to
+	represent the SR(scroll region) boundaries and &quot;<A HREF="motion.html#-">-</A>&quot; the moved rectangles.
+	Note that dst and src share a common region.
+
+	If <A HREF="intro.html#count">count</A> is bigger than 0, move a rectangle in the SR up, this can
+	happen while <A HREF="scroll.html#scrolling">scrolling</A> down.
+
+<B>		+-------------------------+</B>
+<B>		| (clipped above SR)      |            ^</B>
+<B>		|=========================| dst_top    |</B>
+<B>		| dst (still in SR)       |            |</B>
+<B>		+-------------------------+ src_top    |</B>
+<B>		| src (moved up) and dst  |            |</B>
+<B>		|-------------------------| dst_bot    |</B>
+<B>		| src (cleared)           |            |</B>
+<B>		+=========================+ src_bot</B>
+ 
+	If <A HREF="intro.html#count">count</A> is <A HREF="various.html#less">less</A> than zero, move a rectangle in the SR down, this can
+	happen while <A HREF="scroll.html#scrolling">scrolling</A> up.
+
+<B>		+=========================+ src_top</B>
+<B>		| src (cleared)           |            |</B>
+<B>		|------------------------ | dst_top    |</B>
+<B>		| src (moved down) and dst|            |</B>
+<B>		+-------------------------+ src_bot    |</B>
+<B>		| dst (still in SR)       |            |</B>
+<B>		|=========================| dst_bot    |</B>
+<B>		| (clipped below SR)      |            v</B>
+<B>		+-------------------------+</B>
+ 
+==============================================================================
+
+Popupmenu Events						 *<A NAME="ui-popupmenu"></A><B>ui-popupmenu</B>*
+
+Only sent if `ext_popupmenu` option is set in |<A HREF="#ui-options">ui-options</A>|
+
+[&quot;popupmenu_show&quot;, items, selected, row, col]
+	Show |<A HREF="insert.html#popupmenu-completion">popupmenu-completion</A>|. `items` is an array of completion items
+	to show; each item is an array of the form [word, kind, menu, info] <A HREF="motion.html#as">as</A>
+	defined at |<A HREF="insert.html#complete-items">complete-items</A>|, except that `word` is replaced by `abbr`
+	if present.  `selected` is the initially-selected item, a zero-based
+	index into the array of items (-1 if no item is selected). `row` and
+	`col` give the anchor position, where the first character of the
+	completed <A HREF="motion.html#word">word</A> will be.
+
+[&quot;popupmenu_select&quot;, selected]
+	<A HREF="visual.html#Select">Select</A> an item in the current popupmenu. `selected` is a zero-based
+	index into the array of items from the last popupmenu_show event, or
+	-1 if no item is selected.
+
+[&quot;popupmenu_hide&quot;]
+	Hide the popupmenu.
+
+==============================================================================
+
+Tabline Events							   *<A NAME="ui-tabline"></A><B>ui-tabline</B>*
+
+Only sent if `ext_tabline` option is set in |<A HREF="#ui-options">ui-options</A>|
+
+[&quot;tabline_update&quot;, curtab, tabs]
+	Tabline was updated. UIs should present this data in a custom tabline
+	widget.
+	curtab:	  Current Tabpage
+	tabs:	  <A HREF="eval.html#List">List</A> of Dicts <A HREF="motion.html#[{">[{</A> &quot;<A HREF="intro.html#tab">tab</A>&quot;: Tabpage, &quot;name&quot;: <A HREF="eval.html#String">String</A> }, ...]
+
+==============================================================================
+
+<A HREF="cmdline.html#Cmdline">Cmdline</A> Events							   *<A NAME="ui-cmdline"></A><B>ui-cmdline</B>*
+
+Only sent if `ext_cmdline` option is set in |<A HREF="#ui-options">ui-options</A>|
+
+[&quot;cmdline_show&quot;, content, pos, firstc, prompt, indent, level]
+        content: <A HREF="eval.html#List">List</A> of [attrs, string]
+	         [[{}, &quot;t&quot;], [attrs, &quot;est&quot;], ...]
+
+	Triggered when the cmdline is displayed or changed.
+	The `content` is the full content that should be displayed in the
+	cmdline, and the `pos` is the position of the cursor that in the
+	cmdline. The content is divided into chunks with different highlight
+	attributes represented <A HREF="motion.html#as">as</A> a <A HREF="eval.html#dict">dict</A> (see |<A HREF="#ui-event-highlight_set">ui-event-highlight_set</A>|).
+
+	`firstc` and `prompt` are text, that if non-empty should be
+	displayed in front of the command line. `firstc` always indicates
+	built-in command lines such <A HREF="motion.html#as">as</A> `:` (ex command) and `/` `?` (search),
+	while `prompt` is an |<A HREF="eval.html#input()">input()</A>| prompt. `indent` tells how many spaces
+	the content should be indented.
+
+	The Nvim command line can be invoked recursively, for instance by
+	typing `&lt;c-r&gt;=` at the command line prompt. The `level` field is used
+	to distinguish different command lines active at the same time. The
+	first invoked command line has level 1, the next recursively-invoked
+	prompt has level 2. A command line invoked from the |<A HREF="intro.html#cmd-line-window">cmd-line-window</A>|
+	has a higher level than than the edited command line.
+
+[&quot;cmdline_pos&quot;, pos, level]
+	Change the cursor position in the cmdline.
+
+[&quot;cmdline_special_char&quot;, <A HREF="change.html#c">c</A>, <A HREF="intro.html#shift">shift</A>, level]
+	Display a special char in the cmdline at the cursor position. This is
+	typically used to indicate a pending state, e.g. after |<A HREF="cmdline.html#c_CTRL-V">c_CTRL-V</A>|. If
+	`shift` is true the text after the cursor should be shifted, otherwise
+	<A HREF="motion.html#it">it</A> should overwrite the char at the cursor.
+
+	Should be hidden at next cmdline_show.
+
+[&quot;cmdline_hide&quot;]
+	Hide the cmdline.
+
+[&quot;cmdline_block_show&quot;, lines]
+	Show a block of context to the current command line. For example if
+	the user defines a |<A HREF="eval.html#:function">:function</A>| interactively:
+<B>	    :function Foo()</B>
+<B>	    :  echo "foo"</B>
+<B>	    :</B>
+ 
+	`lines` is a <A HREF="eval.html#list">list</A> of lines of highlighted chunks, in the same form <A HREF="motion.html#as">as</A>
+	the &quot;cmdline_show&quot; `contents` parameter.
+
+[&quot;cmdline_block_append&quot;, line]
+	Append a line at the end of the currently shown block.
+
+[&quot;cmdline_block_hide&quot;]
+	Hide the block.
+
+==============================================================================
+
+Wildmenu Events							   *<A NAME="ui-wildmenu"></A><B>ui-wildmenu</B>*
+
+Only sent if `ext_wildmenu` option is set in |<A HREF="#ui-options">ui-options</A>|
+
+[&quot;wildmenu_show&quot;, items]
+	Activate the wildmenu (command-line completion). `items` is an array
+	with the completion items.
+
+[&quot;wildmenu_select&quot;, selected]
+	<A HREF="visual.html#Select">Select</A> an item in the current wildmenu. `selected` is a zero-based
+	index into the array of items from the last wildmenu_show event, or -1
+	if no item is selected.
+
+[&quot;wildmenu_hide&quot;]
+	Hide the wildmenu.
+
+==============================================================================
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+    </div>
+  </body>
+</html>

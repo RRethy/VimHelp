@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+  </head>
+  <body>
+                <img src="images/logo@2x.png" id="navbar-logo" alt="Neovim">
+
+    <div class="container">
+      <h1>Vim documentation: if_lua</h1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+*<A NAME="if_lua.txt"></A><B>if_lua.txt</B>*    Nvim
+
+
+			    NVIM REFERENCE MANUAL
+
+
+
+<A HREF="#Lua">Lua</A> Interface to Nvim					*<A NAME="lua"></A><B>lua</B>* *<A NAME="Lua"></A><B>Lua</B>*
+
+                                      Type |<A HREF="various.html#gO">gO</A>| to see the table of contents.
+
+==============================================================================
+
+Importing modules					*<A NAME="lua-require"></A><B>lua-require</B>*
+
+Nvim automatically adjusts `package.path` and `package.cpath` according to
+effective <A HREF="options.html#'runtimepath'">'runtimepath'</A> value.  Adjustment happens whenever <A HREF="options.html#'runtimepath'">'runtimepath'</A> is
+changed.  `package.path` is adjusted by simply appending `/lua/?.lua` and
+`/lua/?/init.lua` to each directory from <A HREF="options.html#'runtimepath'">'runtimepath'</A> (`/` is actually the
+first character of `package.config`).
+
+Similarly to `package.path`, modified directories from <A HREF="options.html#'runtimepath'">'runtimepath'</A> are also
+added to `package.cpath`.  In this <A HREF="change.html#case">case</A>, instead of appending `/lua/?.lua` and
+`/lua/?/init.lua` to each runtimepath, all unique `?`-containing <A HREF="cmdline.html#suffixes">suffixes</A> of
+the existing `package.cpath` are used.  Example:
+
+1. Given that
+   - <A HREF="options.html#'runtimepath'">'runtimepath'</A> contains `/foo/bar,/xxx;yyy/baz,/abc`;
+   - initial (defined at compile-time or derived from 
+     `$LUA_CPATH`/`$LUA_INIT`) `package.cpath` contains 
+     `./?.so;/def/ghi/a?d/j/g.elf;/def/?.so`.
+2. It finds `?`-containing <A HREF="cmdline.html#suffixes">suffixes</A> `/?.so`, `/a?d/j/g.elf` and `/?.so`, in 
+   order: parts of the path starting from the first path component containing 
+   question <A HREF="motion.html#mark">mark</A> and preceding path separator.
+3. The suffix of `/def/?.so`, namely `/?.so` is not unique, <A HREF="motion.html#as">as</A> it’s the same 
+   <A HREF="motion.html#as">as</A> the suffix of the first path from `package.path` (i.e. `./?.so`).  Which 
+   leaves `/?.so` and `/a?d/j/g.elf`, in this order.
+4. <A HREF="options.html#'runtimepath'">'runtimepath'</A> has three paths: `/foo/bar`, `/xxx;yyy/baz` and `/abc`.  The 
+   second one contains semicolon which is a paths separator so <A HREF="motion.html#it">it</A> is out, 
+   leaving only `/foo/bar` and `/abc`, in order.
+5. The cartesian product of paths from 4. and <A HREF="cmdline.html#suffixes">suffixes</A> from 3. is taken, 
+   giving four variants. In each variant `/lua` path segment is inserted 
+   between path and suffix, leaving
+
+   - `/foo/bar/lua/?.so`
+   - `/foo/bar/lua/a?d/j/g.elf`
+   - `/abc/lua/?.so`
+   - `/abc/lua/a?d/j/g.elf`
+
+6. New paths are prepended to the original `package.cpath`.
+
+The result will look like this:
+
+    `/foo/bar,/xxx;yyy/baz,/abc` ('runtimepath')
+    × `./?.so;/def/ghi/a?d/j/g.elf;/def/?.so` (`package.cpath`)
+
+    = `/foo/bar/lua/?.so;/foo/bar/lua/a?d/j/g.elf;/abc/lua/?.so;/abc/lua/a?d/j/g.elf;./?.so;/def/ghi/a?d/j/g.elf;/def/?.so`
+
+Note: to keep up with <A HREF="options.html#'runtimepath'">'runtimepath'</A> updates paths added at previous update are 
+remembered and removed at the next update, while all paths derived from the 
+new <A HREF="options.html#'runtimepath'">'runtimepath'</A> are prepended <A HREF="motion.html#as">as</A> described above.  This allows removing 
+paths when path is removed from <A HREF="options.html#'runtimepath'">'runtimepath'</A>, adding paths when they are 
+added and reordering `package.path`/`package.cpath` content if <A HREF="options.html#'runtimepath'">'runtimepath'</A> 
+was reordered.
+
+Note 2: even though adjustments happens automatically Nvim does not track 
+current values of `package.path` or `package.cpath`.  If you happened to 
+delete some paths from there you need to reset <A HREF="options.html#'runtimepath'">'runtimepath'</A> to make them 
+readded.  Just running `let &amp;runtimepath = &amp;runtimepath` should work.
+
+Note 3: skipping paths from <A HREF="options.html#'runtimepath'">'runtimepath'</A> which contain semicolons applies 
+both to `package.path` and `package.cpath`.  Given that there is a number of 
+badly written plugins using shell which will not work with paths containing 
+semicolons <A HREF="motion.html#it">it</A> is better to not have them in <A HREF="options.html#'runtimepath'">'runtimepath'</A> at all.
+
+------------------------------------------------------------------------------
+
+Example of a <A HREF="usr_05.html#plugin">plugin</A> that uses <A HREF="#lua">lua</A> modules		*<A NAME="lua-require-example"></A><B>lua-require-example</B>*
+
+The following example <A HREF="usr_05.html#plugin">plugin</A> adds a command `:MakeCharBlob` which transforms 
+current buffer into a long `unsigned char` array.  <A HREF="#Lua">Lua</A> contains transformation 
+function in a module `lua/charblob.lua` which is imported in 
+`autoload/charblob.vim` (`require(&quot;charblob&quot;)`).  Example <A HREF="usr_05.html#plugin">plugin</A> is supposed 
+to be put into any directory from <A HREF="options.html#'runtimepath'">'runtimepath'</A>, e.g. `~/.config/nvim` (in 
+this <A HREF="change.html#case">case</A> `lua/charblob.lua` means `~/.config/nvim/lua/charblob.lua`).
+
+autoload/charblob.vim:
+
+<B>	function charblob#encode_buffer()</B>
+<B>	  call setline(1, luaeval(</B>
+<B>	  \    'require("charblob").encode(unpack(_A))',</B>
+<B>	  \    [getline(1, '$'), &amp;textwidth, '  ']))</B>
+<B>	endfunction</B>
+
+plugin/charblob.vim:
+
+<B>	if exists('g:charblob_loaded')</B>
+<B>	  finish</B>
+<B>	endif</B>
+<B>	let g:charblob_loaded = 1</B>
+
+<B>	command MakeCharBlob :call charblob#encode_buffer()</B>
+
+lua/charblob.lua:
+
+<B>	local function charblob_bytes_iter(lines)</B>
+<B>	  local init_s = {</B>
+<B>	    next_line_idx = 1,</B>
+<B>	    next_byte_idx = 1,</B>
+<B>	    lines = lines,</B>
+<B>	  }</B>
+<B>	  local function next(s, _)</B>
+<B>	    if lines[s.next_line_idx] == nil then</B>
+<B>	      return nil</B>
+<B>	    end</B>
+<B>	    if s.next_byte_idx &gt; #(lines[s.next_line_idx]) then</B>
+<B>	      s.next_line_idx = s.next_line_idx + 1</B>
+<B>	      s.next_byte_idx = 1</B>
+<B>	      return ('\n'):byte()</B>
+<B>	    end</B>
+<B>	    local ret = lines[s.next_line_idx]:byte(s.next_byte_idx)</B>
+<B>	    if ret == ('\n'):byte() then</B>
+<B>	      ret = 0  -- See :h NL-used-for-NUL.</B>
+<B>	    end</B>
+<B>	    s.next_byte_idx = s.next_byte_idx + 1</B>
+<B>	    return ret</B>
+<B>	  end</B>
+<B>	  return next, init_s, nil</B>
+<B>	end</B>
+
+<B>	local function charblob_encode(lines, textwidth, indent)</B>
+<B>	  local ret = {</B>
+<B>	    'const unsigned char blob[] = {',</B>
+<B>	    indent,</B>
+<B>	  }</B>
+<B>	  for byte in charblob_bytes_iter(lines) do</B>
+<B>	    --                .- space + number (width 3) + comma</B>
+<B>	    if #(ret[#ret]) + 5 &gt; textwidth then</B>
+<B>	      ret[#ret + 1] = indent</B>
+<B>	    else</B>
+<B>	      ret[#ret] = ret[#ret] .. ' '</B>
+<B>	    end</B>
+<B>	    ret[#ret] = ret[#ret] .. (('%3u,'):format(byte))</B>
+<B>	  end</B>
+<B>	  ret[#ret + 1] = '};'</B>
+<B>	  return ret</B>
+<B>	end</B>
+
+<B>	return {</B>
+<B>	  bytes_iter = charblob_bytes_iter,</B>
+<B>	  encode = charblob_encode,</B>
+<B>	}</B>
+
+==============================================================================
+
+Commands						*<A NAME="lua-commands"></A><B>lua-commands</B>*
+
+
+							*<A NAME=":lua"></A><B>:lua</B>*
+:[range]lua {chunk}
+			Execute <A HREF="#Lua">Lua</A> chunk {chunk}.
+
+Examples:
+
+<B>	:lua vim.api.nvim_command('echo "Hello, Nvim!"')</B>
+ 
+To see the <A HREF="#Lua">Lua</A> version:
+<B>	:lua print(_VERSION)</B>
+
+To see the LuaJIT version:
+<B>	:lua print(jit.version)</B>
+ 
+
+:[range]lua <A HREF="change.html#&lt;&lt;">&lt;&lt;</A> {endmarker}
+{script}
+{endmarker}
+			Execute <A HREF="#Lua">Lua</A> <A HREF="usr_41.html#script">script</A> {script}.
+
+{endmarker} must NOT be preceded by any white space.  If {endmarker} is
+omitted from after the &quot;<A HREF="change.html#&lt;&lt;">&lt;&lt;</A>&quot;, a dot '<A HREF="repeat.html#.">.</A>' must be used after {script}, like
+for the |<A HREF="insert.html#:append">:append</A>| and |<A HREF="insert.html#:insert">:insert</A>| commands.
+This form of the |<A HREF="#:lua">:lua</A>| command is mainly useful for including <A HREF="#Lua">Lua</A> code
+in Vim scripts.
+
+Example:
+
+<B>	function! CurrentLineInfo()</B>
+<B>	lua &lt;&lt; EOF</B>
+<B>	local linenr = vim.api.nvim_win_get_cursor(0)[1]</B>
+<B>	local curline = vim.api.nvim_buf_get_lines(</B>
+<B>		0, linenr, linenr + 1, false)[1]</B>
+<B>	print(string.format("Current line [%d] has %d bytes",</B>
+<B>		linenr, #curline))</B>
+<B>	EOF</B>
+<B>	endfunction</B>
+
+Note that the `local` <A HREF="eval.html#variables">variables</A> will disappear when block finishes. This is
+not the <A HREF="change.html#case">case</A> for globals.
+
+
+							*<A NAME=":luado"></A><B>:luado</B>*
+:[range]luado {body}	Execute <A HREF="#Lua">Lua</A> function &quot;function (line, linenr) {body}
+			end&quot; for each line in the <A HREF="cmdline.html#[range]">[range]</A>, with the function
+			argument being set to the text of each line in turn,
+			without a trailing <A HREF="intro.html#&lt;EOL&gt;">&lt;EOL&gt;</A>, and the current line number.
+			If the value returned by the function is a <A HREF="eval.html#string">string</A> <A HREF="motion.html#it">it</A>
+			becomes the text of the line in the current turn. The
+			default for <A HREF="cmdline.html#[range]">[range]</A> is the whole file: &quot;1,$&quot;.
+
+Examples:
+
+<B>	:luado return string.format("%s\t%d", line:reverse(), #line)</B>
+
+<B>	:lua require"lpeg"</B>
+<B>	:lua -- balanced parenthesis grammar:</B>
+<B>	:lua bp = lpeg.P{ "(" * ((1 - lpeg.S"()") + lpeg.V(1))^0 * ")" }</B>
+<B>	:luado if bp:match(line) then return "--&gt;\t" .. line end</B>
+ 
+
+
+							*<A NAME=":luafile"></A><B>:luafile</B>*
+:[range]luafile <A HREF="editing.html#{file}">{file}</A>
+			Execute <A HREF="#Lua">Lua</A> <A HREF="usr_41.html#script">script</A> in <A HREF="editing.html#{file}">{file}</A>.
+			The whole argument is used <A HREF="motion.html#as">as</A> a single file name.
+
+Examples:
+
+<B>	:luafile script.lua</B>
+<B>	:luafile %</B>
+ 
+
+All these commands execute a <A HREF="#Lua">Lua</A> chunk from either the command line (:lua and
+<A HREF="#:luado">:luado</A>) or a file (:luafile) with the given line <A HREF="cmdline.html#[range]">[range]</A>. Similarly to the <A HREF="#Lua">Lua</A>
+interpreter, each chunk has its own scope and so only global <A HREF="eval.html#variables">variables</A> are
+shared between command calls. All <A HREF="#Lua">Lua</A> default libraries are available. In
+addition, <A HREF="#Lua">Lua</A> &quot;print&quot; function has its output redirected to the Nvim message
+area, with arguments separated by a white space instead of a <A HREF="intro.html#tab">tab</A>.
+
+<A HREF="#Lua">Lua</A> uses the &quot;vim&quot; module (see |<A HREF="#lua-vim">lua-vim</A>|) to issue commands to Nvim
+and manage <A HREF="windows.html#buffers">buffers</A> (|<A HREF="intro.html#lua-buffer">lua-buffer</A>|) and <A HREF="windows.html#windows">windows</A> (|<A HREF="intro.html#lua-window">lua-window</A>|). However,
+procedures that alter buffer content, open new <A HREF="windows.html#buffers">buffers</A>, and change cursor
+position are restricted when the command is executed in the |<A HREF="eval.html#sandbox">sandbox</A>|.
+
+
+==============================================================================
+
+The vim module						*<A NAME="lua-vim"></A><B>lua-vim</B>*
+
+<A HREF="#Lua">Lua</A> interfaces Nvim through the &quot;vim&quot; module. Currently <A HREF="motion.html#it">it</A> has the `api`
+submodule and some Nvim-specific utilities.
+
+------------------------------------------------------------------------------
+vim.api.* <A HREF="eval.html#functions">functions</A>
+
+`vim.api` exposes the Nvim |<A HREF="api.html#API">API</A>| <A HREF="motion.html#as">as</A> a table of <A HREF="#Lua">Lua</A> <A HREF="eval.html#functions">functions</A>. All <A HREF="eval.html#functions">functions</A>
+are available.
+
+For example, to use the &quot;<A HREF="api.html#nvim_get_current_line()">nvim_get_current_line()</A>&quot; <A HREF="api.html#API">API</A> function, call
+&quot;vim.api.nvim_get_current_line()&quot;:
+
+<B>	print(tostring(vim.api.nvim_get_current_line()))</B>
+
+------------------------------------------------------------------------------
+vim.* utility <A HREF="eval.html#functions">functions</A>
+
+
+vim.stricmp(a, <A HREF="motion.html#b">b</A>)					*<A NAME="lua-vim.stricmp"></A><B>lua-vim.stricmp</B>*
+	Function used for case-insensitive <A HREF="eval.html#string">string</A> comparison.  Takes two 
+	<A HREF="eval.html#string">string</A> arguments and returns 0, 1 or -1 if strings are equal, a is 
+	greater then <A HREF="motion.html#b">b</A> or a is lesser then <A HREF="motion.html#b">b</A> respectively.
+
+
+vim.type_idx						*<A NAME="lua-vim.type_idx"></A><B>lua-vim.type_idx</B>*
+	Type index for use in |<A HREF="intro.html#lua-special-tables">lua-special-tables</A>|.  Specifying one of the 
+	values from |<A HREF="lua-vim.html">lua-vim.types</A>| allows typing the empty table (it is 
+	unclear whether empty <A HREF="#lua">lua</A> table represents empty <A HREF="eval.html#list">list</A> or empty array) 
+	and forcing integral numbers to be |<A HREF="eval.html#Float">Float</A>|.  See |<A HREF="#lua-special-tbl">lua-special-tbl</A>| for 
+	more details.
+
+
+vim.val_idx						*<A NAME="lua-vim.val_idx"></A><B>lua-vim.val_idx</B>*
+	Value index for tables representing |<A HREF="eval.html#Float">Float</A>|<A HREF="change.html#s">s</A>.  A table representing 
+	floating-point value 1.0 looks like this:
+<B>		{</B>
+<B>		  [vim.type_idx] = vim.types.float,</B>
+<B>		  [vim.val_idx] = 1.0,</B>
+<B>		}</B>
+ 	See also |<A HREF="lua-vim.html">lua-vim.type_idx</A>| and |<A HREF="#lua-special-tbl">lua-special-tbl</A>|.
+
+
+vim.types						*<A NAME="lua-vim.types"></A><B>lua-vim.types</B>*
+	Table with possible values for |<A HREF="lua-vim.html">lua-vim.type_idx</A>|.  Contains two sets 
+	of key-value pairs: first maps possible values for |<A HREF="lua-vim.html">lua-vim.type_idx</A>| 
+	to human-readable strings, second maps human-readable type names to 
+	values for |<A HREF="lua-vim.html">lua-vim.type_idx</A>|.  Currently contains pairs for `float`, 
+	`array` and `dictionary` types.
+
+	Note: one must expect that values corresponding to `vim.types.float`, 
+	`vim.types.array` and `vim.types.dictionary` fall under only two 
+	following assumptions:
+	1. Value may serve both <A HREF="motion.html#as">as</A> a key and <A HREF="motion.html#as">as</A> a value in a table.  Given the 
+	   properties of <A HREF="#lua">lua</A> tables this basically means “value is not `nil`”.
+	2. For each value in `vim.types` table `vim.types[vim.types[value]]` 
+	   is the same <A HREF="motion.html#as">as</A> `value`.
+	No other restrictions are put on types, and <A HREF="motion.html#it">it</A> is not guaranteed that 
+	values corresponding to `vim.types.float`, `vim.types.array` and 
+	`vim.types.dictionary` will not change or that `vim.types` table will 
+	only contain values for these three types.
+
+==============================================================================
+
+The luaeval function					*<A NAME="lua-luaeval"></A><B>lua-luaeval</B>* *<A NAME="lua-eval"></A><B>lua-eval</B>*
+
+							*<A NAME="luaeval()"></A><B>luaeval()</B>*
+
+The (dual) equivalent of &quot;vim.eval&quot; for passing <A HREF="#Lua">Lua</A> values to Nvim is
+&quot;luaeval&quot;. &quot;luaeval&quot; takes an <A HREF="eval.html#expression">expression</A> <A HREF="eval.html#string">string</A> and an optional argument used 
+for _A inside <A HREF="eval.html#expression">expression</A> and returns the result of the <A HREF="eval.html#expression">expression</A>. It is 
+semantically equivalent in <A HREF="#Lua">Lua</A> to:
+
+<B>	local chunkheader = "local _A = select(1, ...) return "</B>
+<B>	function luaeval (expstr, arg)</B>
+<B>	    local chunk = assert(loadstring(chunkheader .. expstr, "luaeval"))</B>
+<B>	    return chunk(arg) -- return typval</B>
+<B>	end</B>
+
+Note that &quot;_A&quot; receives the argument to &quot;luaeval&quot;. <A HREF="#Lua">Lua</A> nils, numbers, strings, 
+tables and booleans are converted to their respective VimL types. An error is 
+thrown if conversion of any of the remaining <A HREF="#Lua">Lua</A> types is attempted.
+
+Note 2: <A HREF="#lua">lua</A> tables are used <A HREF="motion.html#as">as</A> both dictionaries and lists, thus making <A HREF="motion.html#it">it</A> 
+impossible to determine whether empty table is meant to be empty <A HREF="eval.html#list">list</A> or empty 
+dictionary. Additionally <A HREF="#lua">lua</A> does not have integer numbers. To distinguish 
+between these cases there is the following agreement:
+
+0. Empty table is empty <A HREF="eval.html#list">list</A>.
+1. Table with N incrementally growing integral numbers, starting from 1 and 
+   ending with N is considered to be a <A HREF="eval.html#list">list</A>.
+2. Table with <A HREF="eval.html#string">string</A> keys, none of which contains NUL byte, is considered to 
+   be a dictionary.
+3. Table with <A HREF="eval.html#string">string</A> keys, at least one of which contains NUL byte, is also 
+   considered to be a dictionary, but this time <A HREF="motion.html#it">it</A> is converted to 
+   a |<A HREF="eval.html#msgpack-special-map">msgpack-special-map</A>|.
+
+							*<A NAME="lua-special-tbl"></A><B>lua-special-tbl</B>*
+4. Table with `vim.type_idx` key may be a dictionary, a <A HREF="eval.html#list">list</A> or floating-point 
+   value:
+   - `{[vim.type_idx]=vim.types.float, [vim.val_idx]=1}` is converted to 
+     a floating-point 1.0. Note that by default integral <A HREF="#lua">lua</A> numbers are 
+     converted to |<A HREF="eval.html#Number">Number</A>|<A HREF="change.html#s">s</A>, non-integral are converted to |<A HREF="eval.html#Float">Float</A>|<A HREF="change.html#s">s</A>. This 
+     variant allows integral |<A HREF="eval.html#Float">Float</A>|<A HREF="change.html#s">s</A>.
+   - `{[vim.type_idx]=vim.types.dictionary}` is converted to an empty 
+     dictionary, `{[vim.type_idx]=vim.types.dictionary, [42]=1, a=2}` is 
+     converted to a dictionary `{'a': 42}`: non-string keys are ignored. 
+     Without `vim.type_idx` key tables with keys not fitting in 1., 2. or 3. 
+     are <A HREF="message.html#errors">errors</A>.
+   - `{[vim.type_idx]=vim.types.list}` is converted to an empty <A HREF="eval.html#list">list</A>. As well 
+     <A HREF="motion.html#as">as</A> `{[vim.type_idx]=vim.types.list, [42]=1}`: integral keys that <A HREF="diff.html#do">do</A> not 
+     form a 1-step sequence from 1 to N are ignored, <A HREF="motion.html#as">as</A> well <A HREF="motion.html#as">as</A> all 
+     non-integral keys.
+
+Examples:
+
+<B>	:echo luaeval('math.pi')</B>
+<B>	:function Rand(x,y) " random uniform between x and y</B>
+<B>	:  return luaeval('(_A.y-_A.x)*math.random()+_A.x', {'x':a:x,'y':a:y})</B>
+<B>	:  endfunction</B>
+<B>	:echo Rand(1,10)</B>
+
+Note that currently second argument to `luaeval` undergoes VimL to <A HREF="#lua">lua</A> 
+conversion, so <A HREF="change.html#changing">changing</A> containers in <A HREF="#lua">lua</A> <A HREF="diff.html#do">do</A> not affect values in VimL. Return 
+value is also always converted. When converting, |<A HREF="eval.html#msgpack-special-dict">msgpack-special-dict</A>|s are 
+treated specially.
+
+==============================================================================
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+    </div>
+  </body>
+</html>

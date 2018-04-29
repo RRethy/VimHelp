@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+  </head>
+  <body>
+                <img src="images/logo@2x.png" id="navbar-logo" alt="Neovim">
+
+    <div class="container">
+      <h1>Vim documentation: usr_23</h1>
+<A NAME="top"></A>
+<A HREF="index.html">main help file</A>
+
+<HR>
+<PRE>
+*<A NAME="usr_23.txt"></A><B>usr_23.txt</B>*	Nvim
+
+		     VIM USER MANUAL - by <A HREF="intro.html#Bram">Bram</A> <A HREF="intro.html#Moolenaar">Moolenaar</A>
+
+			     Editing other files
+
+
+This chapter is about editing files that are not ordinary files.  With Vim you
+can edit files that are compressed.  Some files need to be accessed over the
+<A HREF="intro.html#internet">internet</A>.  With some restrictions, binary files can be edited <A HREF="motion.html#as">as</A> well.
+
+|<A HREF="#23.1">23.1</A>|	DOS, Mac and Unix files
+|<A HREF="#23.2">23.2</A>|	Files on the <A HREF="intro.html#internet">internet</A>
+|<A HREF="#23.3">23.3</A>|	Binary files
+|<A HREF="#23.4">23.4</A>|	Compressed files
+
+     Next chapter: |<A HREF="usr_24.html">usr_24.txt</A>|  Inserting quickly
+ Previous chapter: |<A HREF="usr_22.html">usr_22.txt</A>|  Finding the file to edit
+Table of contents: |<A HREF="usr_toc.html">usr_toc.txt</A>|
+
+==============================================================================
+
+*<A NAME="23.1"></A><B>23.1</B>*	DOS, Mac and Unix files
+
+Back in the early days, the old Teletype machines used two characters to
+start a new line.  One to move the carriage back to the first position
+(carriage return, &lt;CR&gt;), another to move the paper up (line feed, &lt;LF&gt;).
+   When computers came out, storage was expensive.  Some people decided that
+they did not need two characters for end-of-line.  The Unix people decided
+they could use &lt;Line Feed&gt; only for end-of-line.  The Apple people
+standardized on <A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A>.  The MS-DOS (and Microsoft Windows) folks decided to
+keep the old &lt;CR&gt;&lt;LF&gt;.
+   This means that if you try to move a file from one system to another, you
+have line-break problems.  The Vim editor automatically recognizes the
+different file formats and handles things properly behind your back.
+   The option <A HREF="options.html#'fileformats'">'fileformats'</A> contains the various formats that will be tried
+when a new file is edited.  The following command, for example, tells Vim to
+try Unix format first and MS-DOS format second:
+
+<B>	:set fileformats=unix,dos</B>
+
+You will notice the format in the message you get when editing a file.  You
+don't see anything if you edit a native file format.  Thus editing a Unix file
+on Unix won't result in a remark.  But when you edit a dos file, Vim will
+notify you of this:
+
+<B><FONT color="#54A23D">	"/tmp/test" [dos] 3L, 71C </FONT></B>
+
+For a Mac file you would see &quot;[mac]&quot;.
+   The detected file format is stored in the <A HREF="options.html#'fileformat'">'fileformat'</A> option.  To see
+which format you have, execute the following command:
+
+<B>	:set fileformat?</B>
+
+The three names that Vim uses are:
+
+	unix		&lt;LF&gt;
+	dos		&lt;CR&gt;&lt;LF&gt;
+	mac		<A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A>
+
+
+USING THE MAC FORMAT
+
+On Unix, &lt;LF&gt; is used to break a line.  It's not unusual to have a <A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A>
+character halfway in a line.  Incidentally, this happens quite often in <A HREF="intro.html#Vi">Vi</A>
+(and Vim) scripts.
+   On the Macintosh, where <A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A> is the line break character, it's possible to
+have a &lt;LF&gt; character halfway in a line.
+   The result is that it's not possible to be 100&#37; sure whether a file
+containing both <A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A> and &lt;LF&gt; characters is a Mac or a Unix file.  Therefore,
+Vim assumes that on Unix you probably won't edit a Mac file, and doesn't check
+for this type of file.  To check for this format anyway, add &quot;mac&quot; to
+<A HREF="options.html#'fileformats'">'fileformats'</A>:
+
+<B>	:set fileformats+=mac</B>
+
+Then Vim will take a guess at the file format.  Watch out for situations where
+Vim guesses wrong.
+
+
+OVERRULING THE FORMAT
+
+If you use the good old <A HREF="intro.html#Vi">Vi</A> and try to edit an MS-DOS format file, you will
+find that each line ends with a ^M character.  (^M is <A HREF="motion.html#&lt;CR&gt;">&lt;CR&gt;</A>).  The automatic
+detection avoids this.  Suppose you <A HREF="diff.html#do">do</A> want to edit the file that way?  Then
+you need to overrule the format:
+
+<B>	:edit ++ff=unix file.txt</B>
+
+The &quot;++&quot; <A HREF="eval.html#string">string</A> is an item that tells Vim that an option name follows, which
+overrules the default for this single command.  &quot;<A HREF="editing.html#++ff">++ff</A>&quot; is used for
+<A HREF="options.html#'fileformat'">'fileformat'</A>.  You could also use &quot;++ff=mac&quot; or &quot;++ff=dos&quot;.
+   This doesn't work for any option, only &quot;<A HREF="editing.html#++ff">++ff</A>&quot; and &quot;<A HREF="editing.html#++enc">++enc</A>&quot; are currently
+implemented.  The full names &quot;++fileformat&quot; and &quot;++encoding&quot; also work.
+
+
+CONVERSION
+
+You can use the <A HREF="options.html#'fileformat'">'fileformat'</A> option to convert from one file format to
+another.  Suppose, for example, that you have an MS-DOS file named README.TXT
+that you want to convert to Unix format.  Start by editing the MS-DOS format
+file:
+<B>	vim README.TXT</B>
+
+Vim will recognize this <A HREF="motion.html#as">as</A> a dos format file.  Now change the file format to
+Unix:
+
+<B>	:set fileformat=unix</B>
+<B>	:write</B>
+
+The file is written in Unix format.
+
+==============================================================================
+
+*<A NAME="23.2"></A><B>23.2</B>*	Files on the <A HREF="intro.html#internet">internet</A>
+
+Someone sends you an e-mail message, which refers to a file by its URL.  For
+example:
+
+<B><FONT color="#54A23D">	You can find the information here: </FONT></B>
+<B><FONT color="#54A23D">		ftp://ftp.vim.org/pub/vim/README </FONT></B>
+
+You could start a program to <A HREF="intro.html#download">download</A> the file, save <A HREF="motion.html#it">it</A> on your local disk and
+then start Vim to edit <A HREF="motion.html#it">it</A>.
+   There is a much simpler way.  Move the cursor to any character of the URL.
+Then use this command:
+
+<B>	gf</B>
+
+With a bit of luck, Vim will figure out which program to use for downloading
+the file, <A HREF="intro.html#download">download</A> <A HREF="motion.html#it">it</A> and edit the copy.  To open the file in a new <A HREF="windows.html#window">window</A> use
+<A HREF="vimindex.html#CTRL-W">CTRL-W</A> <A HREF="motion.html#f">f</A>.
+   If something goes wrong you will get an error message.  It's possible that
+the URL is wrong, you don't have permission to read <A HREF="motion.html#it">it</A>, the <A HREF="pi_netrw.html#network">network</A> connection
+is down, etc.  Unfortunately, it's hard to tell the cause of the error.  You
+might want to try the manual way of downloading the file.
+
+Accessing files over the <A HREF="intro.html#internet">internet</A> works with the <A HREF="pi_netrw.html#netrw">netrw</A> <A HREF="usr_05.html#plugin">plugin</A>.  Currently URLs
+with these formats are recognized:
+
+	<A HREF="ftp://">ftp://</A> uses ftp
+	rcp://		uses <A HREF="pi_netrw.html#rcp">rcp</A>
+	scp://		uses <A HREF="pi_netrw.html#scp">scp</A>
+	<A HREF="http://">http://</A> uses wget reading only
+
+Vim doesn't <A HREF="diff.html#do">do</A> the communication itself, <A HREF="motion.html#it">it</A> relies on the mentioned programs
+to be available on your computer.  On most Unix systems &quot;ftp&quot; and &quot;<A HREF="pi_netrw.html#rcp">rcp</A>&quot; will
+be present.  &quot;<A HREF="pi_netrw.html#scp">scp</A>&quot; and &quot;wget&quot; might need to be installed.
+
+Vim detects these URLs for each command that starts editing a new file, also
+with &quot;<A HREF="editing.html#:edit">:edit</A>&quot; and &quot;<A HREF="windows.html#:split">:split</A>&quot;, for example.  Write commands also work, except for
+	<A HREF="http://">http://</A>.
+
+For more information, also about passwords, see |<A HREF="pi_netrw.html#netrw">netrw</A>|.
+
+==============================================================================
+
+*<A NAME="23.3"></A><B>23.3</B>*	Binary files
+
+You can edit binary files with Vim.  Vim wasn't really made for this, thus
+there are a few restrictions.  But you can read a file, change a character and
+write <A HREF="motion.html#it">it</A> back, with the result that only that one character was changed and
+the file is identical otherwise.
+   To make sure that Vim does not use its clever tricks in the wrong way, add
+the &quot;<A HREF="starting.html#-b">-b</A>&quot; argument when starting Vim:
+
+<B>	vim -b datafile</B>
+
+This sets the <A HREF="options.html#'binary'">'binary'</A> option.  The effect of this is that unexpected side
+effects are turned off.  For example, <A HREF="options.html#'textwidth'">'textwidth'</A> is set to zero, to avoid
+automatic <A HREF="change.html#formatting">formatting</A> of lines.  And files are always read in Unix file format.
+
+Binary mode can be used to change a message in a program.  Be careful not to
+insert or delete any characters, <A HREF="motion.html#it">it</A> would stop the program from working.  Use
+&quot;<A HREF="change.html#R">R</A>&quot; to enter replace mode.
+
+Many characters in the file will be unprintable.  To see them in Hex format:
+
+<B>	:set display=uhex</B>
+
+Otherwise, the &quot;<A HREF="various.html#ga">ga</A>&quot; command can be used to see the value of the character
+under the cursor.  The output, when the cursor is on an <A HREF="intro.html#&lt;Esc&gt;">&lt;Esc&gt;</A>, looks like
+this:
+
+<B><FONT color="#54A23D">	&lt;^[&gt;  27,  Hex 1b,  Octal 033 </FONT></B>
+
+There might not be many line breaks in the file.  To get some overview switch
+the <A HREF="options.html#'wrap'">'wrap'</A> option off:
+
+<B>	:set nowrap</B>
+
+
+BYTE POSITION
+
+To see on which byte you are in the file use this command:
+
+<B>	g CTRL-G</B>
+
+The output is <A HREF="starting.html#verbose">verbose</A>:
+
+<B><FONT color="#54A23D">    Col 9-16 of 9-16; Line 277 of 330; Word 1806 of 2058; Byte 10580 of 12206 </FONT></B>
+
+The last two numbers are the byte position in the file and the total number of
+bytes.  This takes into account how <A HREF="options.html#'fileformat'">'fileformat'</A> changes the number of bytes
+that a line break uses.
+    To move to a specific byte in the file, use the &quot;go&quot; command.  For
+example, to move to byte 2345:
+
+<B>	2345go</B>
+
+
+USING XXD
+
+A real binary editor shows the text in two ways: <A HREF="motion.html#as">as</A> <A HREF="motion.html#it">it</A> is and in hex format.
+You can <A HREF="diff.html#do">do</A> this in Vim by first converting the file with the &quot;xxd&quot; program.
+This comes with Vim.
+   First edit the file in binary mode:
+
+<B>	vim -b datafile</B>
+
+Now convert the file to a hex dump with xxd:
+
+<B>	:%!xxd</B>
+
+The text will look like this:
+
+<B><FONT color="#54A23D">	0000000: 1f8b 0808 39d7 173b 0203 7474 002b 4e49  ....9..;..tt.+NI </FONT></B>
+<B><FONT color="#54A23D">	0000010: 4b2c 8660 eb9c ecac c462 eb94 345e 2e30  K,.`.....b..4^.0 </FONT></B>
+<B><FONT color="#54A23D">	0000020: 373b 2731 0b22 0ca6 c1a2 d669 1035 39d9  7;'1.".....i.59. </FONT></B>
+
+You can now view and edit the text <A HREF="motion.html#as">as</A> you like.  Vim treats the information <A HREF="motion.html#as">as</A>
+ordinary text.  Changing the hex does not cause the printable character to be
+changed, or the other way around.
+   Finally convert <A HREF="motion.html#it">it</A> back with:
+
+<B>	:%!xxd -r</B>
+
+Only changes in the hex part are used.  Changes in the printable text part on
+the right are ignored.
+
+See the manual page of xxd for more information.
+
+==============================================================================
+
+*<A NAME="23.4"></A><B>23.4</B>*	Compressed files
+
+This is easy: You can edit a compressed file just like any other file.  The
+&quot;<A HREF="pi_gzip.html#gzip">gzip</A>&quot; <A HREF="usr_05.html#plugin">plugin</A> takes care of decompressing the file when you edit <A HREF="motion.html#it">it</A>.  And
+compressing <A HREF="motion.html#it">it</A> again when you write <A HREF="motion.html#it">it</A>.
+   These compression methods are currently supported:
+
+	.Z	<A HREF="pi_gzip.html#compress">compress</A>
+	.gz	<A HREF="pi_gzip.html#gzip">gzip</A>
+	.bz2	<A HREF="pi_gzip.html#bzip2">bzip2</A>
+
+Vim uses the mentioned programs to <A HREF="diff.html#do">do</A> the actual compression and
+decompression.  You might need to install the programs first.
+
+==============================================================================
+
+Next chapter: |<A HREF="usr_24.html">usr_24.txt</A>|  Inserting quickly
+
+Copyright: see |<A HREF="usr_01.html#manual-copyright">manual-copyright</A>|  vim:tw=78:ts=8:ft=help:norl:
+<A HREF="#top">top</A> - <A HREF="index.html">main help file</A>
+</PRE>
+    </div>
+  </body>
+</html>
