@@ -16,6 +16,11 @@ class NeovimFragment @Inject constructor() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        neovimWebview.loadUrl("https://neovim.io/doc/user/")
+        webView.settings.javaScriptEnabled = true
+        webView.settings.setSupportZoom(true)
+        webView.settings.builtInZoomControls = true
+        webView.setInitialScale(100)
+        webView.settings.useWideViewPort = true
+        webView.loadUrl("https://neovim.io/doc/user/")
     }
 }

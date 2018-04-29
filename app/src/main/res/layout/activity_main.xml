@@ -10,7 +10,9 @@
 	<FrameLayout
 		android:id="@+id/fragmentContainer"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		android:layout_marginBottom="56dp"
+		app:layout_constraintBottom_toTopOf="@+id/bottomNav">
 	</FrameLayout>
 
 	<android.support.design.widget.BottomNavigationView

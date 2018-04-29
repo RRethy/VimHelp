@@ -11,14 +11,16 @@ import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
 import com.bonnetrouge.vimhelp.Fragments.BookmarksFragment
+import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
+import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import com.bonnetrouge.vimhelp.R
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var vimFragment: Fragment
-    @Inject lateinit var neovimFragment: Fragment
+    @Inject lateinit var vimFragment: VimFragment
+    @Inject lateinit var neovimFragment: NeovimFragment
     @Inject lateinit var bookmarksFragment: BookmarksFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,10 @@ class MainActivity : AppCompatActivity() {
         when (item?.itemId) {
             R.id.menu_settings -> {
                 Toast.makeText(this, "Clicked settings", Toast.LENGTH_SHORT)
+                return true
+            }
+            R.id.menu_search -> {
+                Toast.makeText(this, "Clicked search", Toast.LENGTH_SHORT)
                 return true
             }
         }

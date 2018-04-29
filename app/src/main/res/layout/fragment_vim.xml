@@ -6,7 +6,7 @@
 	android:background="@android:color/holo_red_dark">
 
 	<WebView
-		android:id="@+id/vimWebview"
+		android:id="@+id/webView"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"></WebView>
+		android:layout_height="match_parent"/>
 </android.support.constraint.ConstraintLayout>
