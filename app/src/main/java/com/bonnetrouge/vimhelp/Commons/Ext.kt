@@ -20,4 +20,3 @@ inline fun AppCompatActivity.fragmentTransaction(addToBackStack: Boolean = true,
     if (addToBackStack) supportFragmentManager.beginTransaction().swapInfo().addToBackStack(tag).commit()
     else supportFragmentManager.beginTransaction().swapInfo().commit()
 }
-

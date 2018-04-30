@@ -10,6 +10,10 @@ import javax.inject.Inject
 
 class BookmarksFragment @Inject constructor() : Fragment() {
 
+    companion object {
+        const val TAG = "BOOKMARKS"
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
             = inflater.inflate(R.layout.fragment_bookmarks, container, false)
 

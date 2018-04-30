@@ -9,7 +9,7 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.dog
 
-class BrowsingDocsWebClient(val ctx: Context) : WebViewClient() {
+class BrowsingDocsWebClient constructor(val ctx: Context) : WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         dog(request?.url.toString())

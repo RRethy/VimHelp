@@ -36,8 +36,5 @@ dependencies {
 
     implementation 'com.android.support:design:27.1.1'
 
-//    implementation "android.arch.lifecycle:runtime:$architecture_components_version"
-//    implementation "android.arch.lifecycle:extensions:$architecture_components_version"
-//    kapt "android.arch.lifecycle:compiler:$architecture_components_version"
-
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
 }
