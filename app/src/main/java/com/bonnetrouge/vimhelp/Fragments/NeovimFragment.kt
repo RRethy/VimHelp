@@ -6,13 +6,14 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.lazyAndroid
-import com.bonnetrouge.vimhelp.Interfaces.OnBackPressedListener
+import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
 import com.bonnetrouge.vimhelp.R
 import com.bonnetrouge.vimhelp.WebViewClients.BrowsingDocsWebClient
 import kotlinx.android.synthetic.main.fragment_neovim.*
 
-class NeovimFragment : Fragment(), OnBackPressedListener {
+class NeovimFragment : Fragment(), OnNavigationListener {
 
     companion object {
         const val TAG = "NEOVIM"
@@ -46,9 +47,18 @@ class NeovimFragment : Fragment(), OnBackPressedListener {
     }
 
     override fun onBackPressed(): Boolean {
-        return if (webView != null && webView.canGoBack()) {
-            webView.goBack()
+        return if (webView != null && webView.canGoBackOrForward(-1)) {
+            webView.goBackOrForward(-1)
             true
         } else false
+    }
+
+    override fun onForwardPressed(): Boolean {
+        return if (webView != null && webView.canGoBackOrForward(1)) {
+            webView.goBackOrForward(1)
+            true
+        } else {
+            false
+        }
     }
 }

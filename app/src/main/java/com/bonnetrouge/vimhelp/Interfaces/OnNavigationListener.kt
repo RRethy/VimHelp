@@ -1,5 +1,6 @@
 package com.bonnetrouge.vimhelp.Interfaces
 
-interface OnBackPressedListener {
+interface OnNavigationListener {
     fun onBackPressed(): Boolean
+    fun onForwardPressed(): Boolean
 }
