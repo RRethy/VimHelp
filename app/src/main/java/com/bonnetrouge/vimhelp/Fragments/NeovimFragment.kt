@@ -26,18 +26,28 @@ class NeovimFragment : Fragment(), OnBackPressedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         retainInstance = true
-        webView?.settings?.setSupportZoom(true)
-        webView?.settings?.builtInZoomControls = true
-        webView?.settings?.displayZoomControls = false
-        webView?.settings?.useWideViewPort = true
-        webView?.setInitialScale(200)
-        webView?.webViewClient = browsingDocsWebClient
-        webView?.loadUrl("file:///android_asset/neovim/help.html")
+        webView.settings.setSupportZoom(true)
+        webView.settings.builtInZoomControls = true
+        webView.settings.displayZoomControls = false
+        webView.settings.useWideViewPort = true
+        webView.setInitialScale(200)
+        webView.webViewClient = browsingDocsWebClient
+        if (savedInstanceState == null) {
+            webView.loadUrl("file:///android_asset/neovim/help.html")
+        } else {
+            webView.restoreState(savedInstanceState)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        webView?.saveState(outState)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onBackPressed(): Boolean {
         return if (webView != null && webView.canGoBack()) {
-            webView?.goBack()
+            webView.goBack()
             true
         } else false
     }
