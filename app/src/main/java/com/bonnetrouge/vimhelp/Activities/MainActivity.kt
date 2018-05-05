@@ -3,6 +3,7 @@ package com.bonnetrouge.vimhelp.Activities
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -24,14 +25,20 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var vimFragment: VimFragment
     @Inject lateinit var neovimFragment: NeovimFragment
     @Inject lateinit var bookmarksFragment: BookmarksFragment
+
     private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG, BookmarksFragment.TAG)
-    private val fragments by lazyAndroid { arrayOf(vimFragment, neovimFragment, bookmarksFragment) }
+    private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment, bookmarksFragment) }
+
     val viewModel by lazyAndroid { ViewModelProviders.of(this).get(MainViewModel::class.java) }
+
+    var menu: Menu? = null
+
+    val mainActivityComponent by lazyAndroid { app.component.plus(MainActivityModule(this)) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        app.component.plus(MainActivityModule(this)).inject(this)
+        mainActivityComponent.inject(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -42,12 +49,24 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav.setOnNavigationItemSelectedListener {
             val nextFragmentIndex = when (it.itemId) {
-                R.id.item_vim -> 0
-                R.id.item_neovim -> 1
-                R.id.item_bookmarks -> 2
+                R.id.item_vim -> {
+                    menu?.findItem(R.id.menu_search)?.isVisible = true
+                    menu?.findItem(R.id.menu_go_forward)?.isVisible = true
+                    0
+                }
+                R.id.item_neovim -> {
+                    menu?.findItem(R.id.menu_search)?.isVisible = true
+                    menu?.findItem(R.id.menu_go_forward)?.isVisible = true
+                    1
+                }
+                R.id.item_bookmarks -> {
+                    menu?.findItem(R.id.menu_search)?.isVisible = false
+                    menu?.findItem(R.id.menu_go_forward)?.isVisible = false
+                    2
+                }
                 else -> 1
             }
-            fragmentTransaction {
+            fragmentTransaction(false) {
                 if (supportFragmentManager.findFragmentByTag(fragmentTags[nextFragmentIndex]) == null) {
                     add(R.id.fragmentContainer, fragments[nextFragmentIndex], fragmentTags[nextFragmentIndex])
                 }
@@ -61,6 +80,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_main, menu)
+
+        this.menu = menu
+
+        if (viewModel.fragmentIndex == 2) {
+            menu?.findItem(R.id.menu_search)?.isVisible = false
+            menu?.findItem(R.id.menu_go_forward)?.isVisible = false
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 

@@ -1,9 +1,7 @@
 package com.bonnetrouge.vimhelp.DI.Modules
 
 import android.support.v7.app.AppCompatActivity
-import com.bonnetrouge.vimhelp.Fragments.BookmarksFragment
-import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
-import com.bonnetrouge.vimhelp.Fragments.VimFragment
+import com.bonnetrouge.vimhelp.Fragments.*
 import dagger.Module
 import dagger.Provides
 
@@ -30,4 +28,8 @@ class MainActivityModule constructor(val activity: AppCompatActivity) {
             return BookmarksFragment()
         } else activity.supportFragmentManager.findFragmentByTag(BookmarksFragment.TAG) as BookmarksFragment
     }
+
+    @Provides fun provideNeovimBookmarkFragment() = NeovimBookmarksFragment()
+
+    @Provides fun provideVimBookmarkFragment() = VimBookmarksFragment()
 }

@@ -1,3 +1,5 @@
 <resources>
 	<string name="app_name">VimHelp</string>
+	<string name="neovim">NEOVIM</string>
+	<string name="vim">VIM</string>
 </resources>

@@ -14,7 +14,7 @@ import com.bonnetrouge.vimhelp.WebViewClients.BrowsingDocsWebClient
 import kotlinx.android.synthetic.main.fragment_vim.*
 import javax.inject.Inject
 
-class VimFragment @Inject constructor() : Fragment(), OnNavigationListener {
+class VimFragment : Fragment(), OnNavigationListener {
 
     companion object {
         const val TAG = "VIM"
