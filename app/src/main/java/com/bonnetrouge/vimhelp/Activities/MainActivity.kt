@@ -11,7 +11,6 @@ import com.bonnetrouge.vimhelp.Commons.app
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
 import com.bonnetrouge.vimhelp.Commons.lazyAndroid
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
-import com.bonnetrouge.vimhelp.Fragments.BookmarksFragment
 import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
 import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
@@ -24,10 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var vimFragment: VimFragment
     @Inject lateinit var neovimFragment: NeovimFragment
-    @Inject lateinit var bookmarksFragment: BookmarksFragment
 
-    private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG, BookmarksFragment.TAG)
-    private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment, bookmarksFragment) }
+    private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG)
+    private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment) }
 
     val viewModel by lazyAndroid { ViewModelProviders.of(this).get(MainViewModel::class.java) }
 
@@ -49,21 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav.setOnNavigationItemSelectedListener {
             val nextFragmentIndex = when (it.itemId) {
-                R.id.item_vim -> {
-                    menu?.findItem(R.id.menu_search)?.isVisible = true
-                    menu?.findItem(R.id.menu_go_forward)?.isVisible = true
-                    0
-                }
-                R.id.item_neovim -> {
-                    menu?.findItem(R.id.menu_search)?.isVisible = true
-                    menu?.findItem(R.id.menu_go_forward)?.isVisible = true
-                    1
-                }
-                R.id.item_bookmarks -> {
-                    menu?.findItem(R.id.menu_search)?.isVisible = false
-                    menu?.findItem(R.id.menu_go_forward)?.isVisible = false
-                    2
-                }
+                R.id.item_vim -> 0
+                R.id.item_neovim -> 1
                 else -> 1
             }
             fragmentTransaction(false) {
@@ -83,11 +68,6 @@ class MainActivity : AppCompatActivity() {
 
         this.menu = menu
 
-        if (viewModel.fragmentIndex == 2) {
-            menu?.findItem(R.id.menu_search)?.isVisible = false
-            menu?.findItem(R.id.menu_go_forward)?.isVisible = false
-        }
-
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -106,10 +86,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (fragments[viewModel.fragmentIndex] is OnNavigationListener) {
-            if ((fragments[viewModel.fragmentIndex] as OnNavigationListener).onBackPressed()) {
-                return
-            }
+        if ((fragments[viewModel.fragmentIndex] as OnNavigationListener).onBackPressed()) {
+            return
         }
         super.onBackPressed()
     }

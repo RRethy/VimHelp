@@ -22,14 +22,4 @@ class MainActivityModule constructor(val activity: AppCompatActivity) {
             return VimFragment()
         } else activity.supportFragmentManager.findFragmentByTag(VimFragment.TAG) as VimFragment
     }
-
-    @Provides fun provideBookmarkFragment(activity: AppCompatActivity): BookmarksFragment {
-        return if (activity.supportFragmentManager.findFragmentByTag(BookmarksFragment.TAG) == null) {
-            return BookmarksFragment()
-        } else activity.supportFragmentManager.findFragmentByTag(BookmarksFragment.TAG) as BookmarksFragment
-    }
-
-    @Provides fun provideNeovimBookmarkFragment() = NeovimBookmarksFragment()
-
-    @Provides fun provideVimBookmarkFragment() = VimBookmarksFragment()
 }

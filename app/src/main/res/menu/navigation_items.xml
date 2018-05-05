@@ -8,8 +8,4 @@
 		  android:title="Neovim"
 		  android:checked="true"
 		  android:icon="@drawable/ic_neovim_colored"/>
-	<item android:id="@+id/item_bookmarks"
-		  android:title="Bookmarks"
-		  android:checked="false"
-		  android:icon="@drawable/ic_bookmark_border_black_24dp"/>
 </menu>
