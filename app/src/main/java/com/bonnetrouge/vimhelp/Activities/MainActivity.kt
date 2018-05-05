@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.app
+import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
 import com.bonnetrouge.vimhelp.Commons.lazyAndroid
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
@@ -17,6 +18,10 @@ import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
 import com.bonnetrouge.vimhelp.R
 import com.bonnetrouge.vimhelp.ViewModels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.launch
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -61,12 +66,33 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        test()
+    }
+
+    fun test() {
+        BufferedReader(InputStreamReader(assets.open("neovim/tags.txt")))
+                .use {
+                    var line: String? = it.readLine()
+
+                    while (line != null) {
+                        dog(line)
+                        line = it.readLine()
+                        dog(line)
+                        line = it.readLine()
+                    }
+                }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_main, menu)
 
         this.menu = menu
+
+        menu?.findItem(R.id.menu_search)?.setOnMenuItemClickListener {
+            SearchActivity.navigate(this)
+            true
+        }
 
         return super.onCreateOptionsMenu(menu)
     }
