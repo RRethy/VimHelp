@@ -1,6 +1,5 @@
 package com.bonnetrouge.vimhelp.DI.Components
 
-import com.bonnetrouge.vimhelp.Activities.MainActivity
 import com.bonnetrouge.vimhelp.DI.Modules.AppModule
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
 import com.bonnetrouge.vimhelp.VimHelpApp
@@ -12,4 +11,5 @@ import javax.inject.Singleton
 interface AppComponent {
     fun inject(app: VimHelpApp)
     fun plus(mainActivityModule: MainActivityModule): MainActivitySubcomponent
+    fun plus(): SearchActivitySubcomponent
 }

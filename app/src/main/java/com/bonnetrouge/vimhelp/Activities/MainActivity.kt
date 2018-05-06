@@ -1,6 +1,8 @@
 package com.bonnetrouge.vimhelp.Activities
 
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.app
-import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
 import com.bonnetrouge.vimhelp.Commons.lazyAndroid
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
@@ -16,18 +17,19 @@ import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
 import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
 import com.bonnetrouge.vimhelp.R
+import com.bonnetrouge.vimhelp.Tags.NeovimTagsManager
+import com.bonnetrouge.vimhelp.Tags.VimTagsManager
 import com.bonnetrouge.vimhelp.ViewModels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.experimental.launch
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var vimFragment: VimFragment
     @Inject lateinit var neovimFragment: NeovimFragment
+
+    @Inject lateinit var vimTagsManager: VimTagsManager
+    @Inject lateinit var neovimTagsManager: NeovimTagsManager
 
     private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG)
     private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment) }
@@ -66,22 +68,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-        test()
-    }
-
-    fun test() {
-        BufferedReader(InputStreamReader(assets.open("neovim/tags.txt")))
-                .use {
-                    var line: String? = it.readLine()
-
-                    while (line != null) {
-                        dog(line)
-                        line = it.readLine()
-                        dog(line)
-                        line = it.readLine()
-                    }
-                }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -116,5 +102,16 @@ class MainActivity : AppCompatActivity() {
             return
         }
         super.onBackPressed()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SearchActivity.SEARCH_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            when (viewModel.fragmentIndex) {
+                0 -> vimFragment.updateUrl(vimTagsManager.vimUrlsMap[data?.data?.toString()])
+                1 -> neovimFragment.updateUrl(neovimTagsManager.nvimUrlsMap[data?.data?.toString()])
+            }
+        }
     }
 }

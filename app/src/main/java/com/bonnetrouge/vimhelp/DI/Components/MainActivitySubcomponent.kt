@@ -4,7 +4,7 @@ import com.bonnetrouge.vimhelp.Activities.MainActivity
 import com.bonnetrouge.vimhelp.DI.Modules.MainActivityModule
 import dagger.Subcomponent
 
-@Subcomponent(modules = arrayOf(MainActivityModule::class))
+@Subcomponent(modules = [MainActivityModule::class])
 interface MainActivitySubcomponent {
     fun inject(activity: MainActivity)
 }

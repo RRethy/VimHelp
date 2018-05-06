@@ -62,4 +62,8 @@ class VimFragment : Fragment(), OnNavigationListener {
             false
         }
     }
+
+    fun updateUrl(url: String?) {
+        url?.let { webView.loadUrl(url) }
+    }
 }
