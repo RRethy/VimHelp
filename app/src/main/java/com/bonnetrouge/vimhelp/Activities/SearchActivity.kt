@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
+import android.view.View
 import com.bonnetrouge.vimhelp.Adapters.SuggestionsAdapter
 import com.bonnetrouge.vimhelp.Commons.*
 import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
@@ -34,6 +35,8 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
     }
 
     @Inject lateinit var tagsManager: TagsManager
+
+    @Inject lateinit var quotesGenerator: QuotesGenerator
 
     private val debounceTextWatcher by lazyAndroid { DebounceTextWatcher(this, 300) }
 
@@ -78,7 +81,7 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
                 tagsManager.vimTags
             }.fuzzyFilter(MED_FUZZY, s) { this.tag }
             if (!newSuggestions.isEmpty()) {
-                // TODO: hide no results found
+                hiddenQuote.visibility = View.GONE
                 val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                         return adapter.suggestions[oldItemPosition] == newSuggestions[newItemPosition]
@@ -94,7 +97,11 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
                 adapter.suggestions.addAll(newSuggestions)
                 diffResult.dispatchUpdatesTo(adapter)
             } else {
-                // TODO: show no results found
+                val size = adapter.suggestions.size
+                adapter.suggestions.clear()
+                adapter.notifyItemRangeRemoved(0, size)
+                hiddenQuote.visibility = View.VISIBLE
+                hiddenQuote.text = quotesGenerator.getRandomQuote()
             }
         }
     }

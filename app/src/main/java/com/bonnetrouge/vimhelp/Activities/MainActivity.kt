@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.bonnetrouge.vimhelp.Commons.QuotesGenerator
 import com.bonnetrouge.vimhelp.Commons.app
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
 import com.bonnetrouge.vimhelp.Commons.lazyAndroid
@@ -26,12 +27,12 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var vimFragment: VimFragment
     @Inject lateinit var neovimFragment: NeovimFragment
 
+    @Inject lateinit var quotesGenerator: QuotesGenerator
+
     private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG)
     private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment) }
 
     val viewModel by lazyAndroid { ViewModelProviders.of(this).get(MainViewModel::class.java) }
-
-    var menu: Menu? = null
 
     val mainActivityComponent by lazyAndroid { app.component.plus(MainActivityModule(this)) }
 
@@ -68,24 +69,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_main, menu)
 
-        this.menu = menu
-
-        menu?.findItem(R.id.menu_search)?.setOnMenuItemClickListener {
-            val fragmentTag = if (viewModel.fragmentIndex == 0) VimFragment.TAG else NeovimFragment.TAG
-            SearchActivity.navigate(this, fragmentTag)
-            true
-        }
-
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menu_settings -> Toast.makeText(this, "Clicked settings", Toast.LENGTH_SHORT).show()
-            R.id.menu_search -> Toast.makeText(this, "Clicked search", Toast.LENGTH_SHORT).show()
+            R.id.menu_search -> {
+                val fragmentTag = if (viewModel.fragmentIndex == 0) VimFragment.TAG else NeovimFragment.TAG
+                SearchActivity.navigate(this, fragmentTag)
+            }
             R.id.menu_go_forward -> {
                 if (!(fragments[viewModel.fragmentIndex] as OnNavigationListener).onForwardPressed()) {
-                    // TODO: Think of something to do when there's no where forward to navigate
+                    Toast.makeText(this, quotesGenerator.getRandomQuote(), Toast.LENGTH_LONG).show()
                 }
             }
             android.R.id.home -> onBackPressed()

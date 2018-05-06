@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.bonnetrouge.vimhelp.Activities.MainActivity
 import com.bonnetrouge.vimhelp.Commons.lazyAndroid
 import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
 import com.bonnetrouge.vimhelp.R
@@ -19,7 +20,7 @@ class NeovimFragment : Fragment(), OnNavigationListener {
         const val TAG = "NEOVIM"
     }
 
-    private val browsingDocsWebClient by lazyAndroid { BrowsingDocsWebClient(activity as Context) }
+    private val browsingDocsWebClient by lazyAndroid { BrowsingDocsWebClient(activity as Context, (activity as MainActivity).quotesGenerator) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
             = inflater.inflate(R.layout.fragment_neovim, container, false)

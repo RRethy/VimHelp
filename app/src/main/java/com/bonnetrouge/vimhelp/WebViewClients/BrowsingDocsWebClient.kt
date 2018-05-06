@@ -7,14 +7,15 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import com.bonnetrouge.vimhelp.Commons.QuotesGenerator
 
-class BrowsingDocsWebClient constructor(val ctx: Context) : WebViewClient() {
+class BrowsingDocsWebClient constructor(val ctx: Context, val quotesGenerator: QuotesGenerator) : WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         return if (request?.url.toString().startsWith("file:///android_asset/")) {
             super.shouldOverrideUrlLoading(view, request)
         } else if (request?.url.toString().contains("email-protection")) {
-            Toast.makeText(ctx, "This email is protected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, quotesGenerator.getRandomQuote(), Toast.LENGTH_LONG).show()
             true
         } else {
             val url = request?.url.toString()
