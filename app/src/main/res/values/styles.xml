@@ -13,4 +13,7 @@
 		<item name="android:homeAsUpIndicator">@drawable/ic_arrow_back_white_24dp</item>
 	</style>
 
+	<style name="AppTheme.Launcher">
+		<item name="android:windowBackground">@drawable/launch_screen</item>
+	</style>
 </resources>

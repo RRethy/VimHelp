@@ -24,6 +24,13 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        fun navigate(activity: AppCompatActivity) {
+            val i = Intent(activity, MainActivity::class.java)
+            activity.startActivity(i)
+        }
+    }
+
     @Inject lateinit var vimFragment: VimFragment
     @Inject lateinit var neovimFragment: NeovimFragment
 
