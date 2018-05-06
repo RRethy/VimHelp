@@ -48,22 +48,7 @@ class MainActivity : AppCompatActivity() {
             bottomNav.selectedItemId = R.id.item_neovim
         }
 
-        bottomNav.setOnNavigationItemSelectedListener {
-            val nextFragmentIndex = when (it.itemId) {
-                R.id.item_vim -> 0
-                R.id.item_neovim -> 1
-                else -> 1
-            }
-            fragmentTransaction(false) {
-                if (supportFragmentManager.findFragmentByTag(fragmentTags[nextFragmentIndex]) == null) {
-                    add(R.id.fragmentContainer, fragments[nextFragmentIndex], fragmentTags[nextFragmentIndex])
-                }
-                hide(fragments[viewModel.fragmentIndex])
-                viewModel.fragmentIndex = nextFragmentIndex
-                show(fragments[viewModel.fragmentIndex])
-            }
-            true
-        }
+        setupBottomNavigation()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -106,4 +91,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun setupBottomNavigation() {
+        bottomNav.setOnNavigationItemSelectedListener {
+            val nextFragmentIndex = when (it.itemId) {
+                R.id.item_vim -> 0
+                R.id.item_neovim -> 1
+                else -> 1
+            }
+            fragmentTransaction(false) {
+                if (supportFragmentManager.findFragmentByTag(fragmentTags[nextFragmentIndex]) == null) {
+                    add(R.id.fragmentContainer, fragments[nextFragmentIndex], fragmentTags[nextFragmentIndex])
+                }
+                hide(fragments[viewModel.fragmentIndex])
+                viewModel.fragmentIndex = nextFragmentIndex
+                show(fragments[viewModel.fragmentIndex])
+            }
+            true
+        }    }
 }

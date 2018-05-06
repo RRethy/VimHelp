@@ -48,14 +48,9 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
         app.component.plus().inject(this)
 
         setSupportActionBar(toolbar)
-
-        completionRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        completionRecyclerView.adapter = adapter
-        adapter.suggestions.addAll(tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)))
-        adapter.notifyItemRangeInserted(0, tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)).size)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        setupRecyclerView()
         setupSearchEditText()
     }
 
@@ -110,6 +105,14 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
             clearSearchButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_clear_white_24dp))
         }
     }
+
+    private fun setupRecyclerView() {
+        completionRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        completionRecyclerView.adapter = adapter
+        adapter.suggestions.addAll(tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)))
+        adapter.notifyItemRangeInserted(0, tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)).size)
+    }
+
     private fun setupSearchEditText() {
         searchEditText.addTextChangedListener(debounceTextWatcher)
         clearSearchButton.setOnClickListener { searchEditText.setText("") }

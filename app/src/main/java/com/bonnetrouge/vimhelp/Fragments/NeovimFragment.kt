@@ -27,13 +27,9 @@ class NeovimFragment : Fragment(), OnNavigationListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        retainInstance = true
-        webView.settings.setSupportZoom(true)
-        webView.settings.builtInZoomControls = true
-        webView.settings.displayZoomControls = false
-        webView.settings.useWideViewPort = true
-        webView.setInitialScale(200)
-        webView.webViewClient = browsingDocsWebClient
+
+        setupWebView()
+
         if (savedInstanceState == null) {
             webView.loadUrl("file:///android_asset/neovim/help.html")
         } else {
@@ -63,6 +59,14 @@ class NeovimFragment : Fragment(), OnNavigationListener {
         }
     }
 
+    private fun setupWebView() {
+        webView.settings.setSupportZoom(true)
+        webView.settings.builtInZoomControls = true
+        webView.settings.displayZoomControls = false
+        webView.settings.useWideViewPort = true
+        webView.setInitialScale(200)
+        webView.webViewClient = browsingDocsWebClient
+    }
     fun updateUrl(url: String?) {
         url?.let { webView.loadUrl(url) }
     }
