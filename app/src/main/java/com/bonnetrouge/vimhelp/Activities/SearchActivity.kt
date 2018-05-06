@@ -9,12 +9,13 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
-import com.bonnetrouge.vimhelp.Adapters.CompletionAdapter
+import com.bonnetrouge.vimhelp.Adapters.SuggestionsAdapter
 import com.bonnetrouge.vimhelp.Commons.*
+import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
 import com.bonnetrouge.vimhelp.Listeners.DebounceTextWatcher
 import com.bonnetrouge.vimhelp.R
-import com.bonnetrouge.vimhelp.Tags.NeovimTagsManager
-import com.bonnetrouge.vimhelp.Tags.VimTagsManager
+import com.bonnetrouge.vimhelp.Tags.Tag
+import com.bonnetrouge.vimhelp.Tags.TagsManager
 import kotlinx.android.synthetic.main.activity_search.*
 import javax.inject.Inject
 
@@ -23,19 +24,20 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
 
     companion object {
         const val SEARCH_REQUEST_CODE = 1867
+        const val FRAGMENT_TAG = "CURRENT_FRAGMENT"
 
-        fun navigate(activity: AppCompatActivity) {
+        fun navigate(activity: AppCompatActivity, fragmentTag: String) {
             val i = Intent(activity, SearchActivity::class.java)
+            i.putExtra(FRAGMENT_TAG, fragmentTag)
             activity.startActivityForResult(i, SEARCH_REQUEST_CODE)
         }
     }
 
-    @Inject lateinit var neovimTagsManager: NeovimTagsManager
-    @Inject lateinit var vimTagsManager: VimTagsManager
+    @Inject lateinit var tagsManager: TagsManager
 
     private val debounceTextWatcher by lazyAndroid { DebounceTextWatcher(this, 300) }
 
-    private val adapter: CompletionAdapter by lazyAndroid { CompletionAdapter(this) }
+    private val adapter: SuggestionsAdapter by lazyAndroid { SuggestionsAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,8 +72,11 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
 
     override fun onDebounced(s: CharSequence) {
         runOnUiThread {
-            val newSuggestions = neovimTagsManager.nvimTags
-                    .fuzzyFilter(MED_FUZZY, s) { this }
+            val newSuggestions = if (intent.getStringExtra(FRAGMENT_TAG) == NeovimFragment.TAG) {
+                tagsManager.nvimTags
+            } else {
+                tagsManager.vimTags
+            }.fuzzyFilter(MED_FUZZY, s) { this.tag }
             if (!newSuggestions.isEmpty()) {
                 // TODO: hide no results found
                 val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -106,10 +111,10 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
         clearSearchButton.setOnClickListener { searchEditText.setText("") }
     }
 
-    fun onSuggestionClicked(suggestion: String) {
+    fun onSuggestionClicked(suggestion: Tag) {
         val data = Intent()
-        data.data = Uri.parse(suggestion)
-        setResult(Activity.RESULT_OK)
+        data.data = Uri.parse(suggestion.uri)
+        setResult(Activity.RESULT_OK, data)
 
         finish()
     }

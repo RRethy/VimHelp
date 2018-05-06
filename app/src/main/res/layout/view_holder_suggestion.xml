@@ -23,14 +23,28 @@
 			app:srcCompat="@drawable/ic_search_white_24dp"
 			/>
 		<TextView
-			android:id="@+id/suggestionText"
+			android:id="@+id/suggestionTag"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_margin="10dp"
+			android:text="This shouldn't be seen :/"
+			android:textSize="18sp"
+			android:textColor="@android:color/white"
+			/>
+		<Space
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
-			android:layout_margin="10dp"
-			android:text="PLACEHOLDER"
-			android:textSize="28sp"
-			android:textColor="@android:color/white"
+			/>
+		<TextView
+			android:id="@+id/suggestionFileName"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:gravity="bottom"
+			android:layout_margin="8dp"
+			android:text="non-exsistant.txt"
+			android:textSize="10sp"
+			android:textColor="@color/fadedText"
 			/>
 	</LinearLayout>
 </android.support.v7.widget.CardView>

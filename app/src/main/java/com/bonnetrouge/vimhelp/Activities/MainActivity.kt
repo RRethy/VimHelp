@@ -17,8 +17,6 @@ import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
 import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
 import com.bonnetrouge.vimhelp.R
-import com.bonnetrouge.vimhelp.Tags.NeovimTagsManager
-import com.bonnetrouge.vimhelp.Tags.VimTagsManager
 import com.bonnetrouge.vimhelp.ViewModels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -27,9 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var vimFragment: VimFragment
     @Inject lateinit var neovimFragment: NeovimFragment
-
-    @Inject lateinit var vimTagsManager: VimTagsManager
-    @Inject lateinit var neovimTagsManager: NeovimTagsManager
 
     private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG)
     private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment) }
@@ -76,7 +71,8 @@ class MainActivity : AppCompatActivity() {
         this.menu = menu
 
         menu?.findItem(R.id.menu_search)?.setOnMenuItemClickListener {
-            SearchActivity.navigate(this)
+            val fragmentTag = if (viewModel.fragmentIndex == 0) VimFragment.TAG else NeovimFragment.TAG
+            SearchActivity.navigate(this, fragmentTag)
             true
         }
 
@@ -109,8 +105,8 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == SearchActivity.SEARCH_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             when (viewModel.fragmentIndex) {
-                0 -> vimFragment.updateUrl(vimTagsManager.vimUrlsMap[data?.data?.toString()])
-                1 -> neovimFragment.updateUrl(neovimTagsManager.nvimUrlsMap[data?.data?.toString()])
+                0 -> vimFragment.updateUrl(data?.data?.toString())
+                1 -> neovimFragment.updateUrl(data?.data?.toString())
             }
         }
     }

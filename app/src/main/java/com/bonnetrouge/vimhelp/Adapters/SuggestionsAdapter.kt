@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.bonnetrouge.vimhelp.Activities.SearchActivity
 import com.bonnetrouge.vimhelp.Commons.bindView
+import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.R
+import com.bonnetrouge.vimhelp.Tags.Tag
+import java.util.regex.Pattern
 
-class CompletionAdapter(val searchActivity: SearchActivity) : RecyclerView.Adapter<CompletionAdapter.SuggestionViewHolder>() {
+class SuggestionsAdapter(val searchActivity: SearchActivity) : RecyclerView.Adapter<SuggestionsAdapter.SuggestionViewHolder>() {
 
-    val suggestions = arrayListOf<String>()
+    val suggestions = arrayListOf<Tag>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionViewHolder {
         return SuggestionViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.view_holder_suggestion, parent, false))
@@ -25,14 +28,21 @@ class CompletionAdapter(val searchActivity: SearchActivity) : RecyclerView.Adapt
 
     inner class SuggestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val suggestionText: TextView by bindView(R.id.suggestionText)
+        val suggestionTag: TextView by bindView(R.id.suggestionTag)
+        val suggestionFileName: TextView by bindView(R.id.suggestionFileName)
+
+        val pattern: Pattern = Pattern.compile("file:///android_asset/.*/(.*).html#.*")
 
         init {
-            suggestionText.setOnClickListener { searchActivity.onSuggestionClicked(suggestions[adapterPosition]) }
+            view.setOnClickListener { searchActivity.onSuggestionClicked(suggestions[adapterPosition]) }
         }
 
-        fun onBind(s: String) {
-            suggestionText.text = s
+        fun onBind(tag: Tag) {
+            suggestionTag.text = tag.tag
+            val matcher = pattern.matcher(tag.uri)
+            if (matcher.find()) {
+                suggestionFileName.text = String.format("%s.txt", matcher.group(1))
+            }
         }
     }
 }
