@@ -7,15 +7,13 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import com.bonnetrouge.vimhelp.Commons.dog
 
 class BrowsingDocsWebClient constructor(val ctx: Context) : WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-        dog(request?.url.toString())
         return if (request?.url.toString().startsWith("file:///android_asset/")) {
             super.shouldOverrideUrlLoading(view, request)
-        } else if (request?.url.toString().endsWith("email-protection")) {
+        } else if (request?.url.toString().contains("email-protection")) {
             Toast.makeText(ctx, "This email is protected", Toast.LENGTH_SHORT).show()
             true
         } else {

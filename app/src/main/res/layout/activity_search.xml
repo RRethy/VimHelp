@@ -35,7 +35,7 @@
 				android:layout_height="wrap_content"
 				android:background="?attr/selectableItemBackgroundBorderless"
 				android:layout_gravity="end|center"
-				app:srcCompat="@drawable/ic_clear_white_24dp"
+				app:srcCompat="@drawable/ic_clear_grey_24dp"
 				/>
 		</LinearLayout>
 	</android.support.v7.widget.Toolbar>

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.bonnetrouge.vimhelp.Activities.SearchActivity
 import com.bonnetrouge.vimhelp.Commons.bindView
-import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.R
 import com.bonnetrouge.vimhelp.Tags.Tag
 import java.util.regex.Pattern
