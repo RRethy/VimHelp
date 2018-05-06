@@ -1,6 +1,7 @@
 package com.bonnetrouge.vimhelp.Tags
 
 import com.bonnetrouge.vimhelp.Commons.app
+import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import kotlinx.coroutines.experimental.launch
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -9,12 +10,17 @@ import javax.inject.Singleton
 @Singleton
 class TagsManager {
 
-    val vimTags = ArrayList<Tag>()
-    val nvimTags = ArrayList<Tag>()
+    private val vimTags = ArrayList<Tag>()
+    private val nvimTags = ArrayList<Tag>()
 
     init {
         initNvimTags()
         initVimTags()
+    }
+
+    fun tags(choice: String): ArrayList<Tag> {
+        return if (choice == VimFragment.TAG) vimTags
+        else nvimTags
     }
 
     private fun initNvimTags() {

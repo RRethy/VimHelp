@@ -51,8 +51,8 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
 
         completionRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         completionRecyclerView.adapter = adapter
-
-        adapter.notifyItemRangeInserted(0, 9)
+        adapter.suggestions.addAll(tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)))
+        adapter.notifyItemRangeInserted(0, tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)).size)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -75,11 +75,8 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
 
     override fun onDebounced(s: CharSequence) {
         runOnUiThread {
-            val newSuggestions = if (intent.getStringExtra(FRAGMENT_TAG) == NeovimFragment.TAG) {
-                tagsManager.nvimTags
-            } else {
-                tagsManager.vimTags
-            }.fuzzyFilter(MED_FUZZY, s) { this.tag }
+            val newSuggestions = tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG))
+                    .fuzzyFilter(MED_FUZZY, s) { this.tag }
             if (!newSuggestions.isEmpty()) {
                 hiddenQuote.visibility = View.GONE
                 val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
