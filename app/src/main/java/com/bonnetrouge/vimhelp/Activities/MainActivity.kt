@@ -71,11 +71,7 @@ class MainActivity : AppCompatActivity() {
                 val fragmentTag = if (viewModel.fragmentIndex == 0) VimFragment.TAG else NeovimFragment.TAG
                 SearchActivity.navigate(this, fragmentTag)
             }
-            R.id.menu_go_forward -> {
-                if (!(fragments[viewModel.fragmentIndex] as OnNavigationListener).onForwardPressed()) {
-                    Toast.makeText(this, quotesGenerator.getRandomQuote(), Toast.LENGTH_LONG).show()
-                }
-            }
+            R.id.menu_go_forward -> (fragments[viewModel.fragmentIndex] as OnNavigationListener).onForwardPressed()
             android.R.id.home -> onBackPressed()
         }
         return true
