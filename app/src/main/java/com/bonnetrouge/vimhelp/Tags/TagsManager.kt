@@ -1,6 +1,7 @@
 package com.bonnetrouge.vimhelp.Tags
 
 import com.bonnetrouge.vimhelp.Commons.app
+import com.bonnetrouge.vimhelp.Commons.dog
 import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import kotlinx.coroutines.experimental.launch
 import java.io.BufferedReader

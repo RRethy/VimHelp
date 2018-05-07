@@ -18,6 +18,7 @@ import com.bonnetrouge.vimhelp.Fragments.NeovimFragment
 import com.bonnetrouge.vimhelp.Fragments.VimFragment
 import com.bonnetrouge.vimhelp.Interfaces.OnNavigationListener
 import com.bonnetrouge.vimhelp.R
+import com.bonnetrouge.vimhelp.Tags.TagsManager
 import com.bonnetrouge.vimhelp.ViewModels.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var neovimFragment: NeovimFragment
 
     @Inject lateinit var quotesGenerator: QuotesGenerator
+    @Inject lateinit var tagsManager: TagsManager
 
     private val fragmentTags = arrayOf(VimFragment.TAG, NeovimFragment.TAG)
     private val fragments by lazyAndroid { arrayOf<Fragment>(vimFragment, neovimFragment) }
