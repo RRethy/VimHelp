@@ -1,6 +1,10 @@
 <resources>
 	<string name="app_name">VimHelp</string>
-	<string name="neovim">NEOVIM</string>
-	<string name="vim">VIM</string>
+	<string name="neovim">Neovim</string>
+	<string name="vim">Vim</string>
 	<string name="search_hint">Search</string>
+	<string name="pref_default_startup_dialog_title">Choose default Docset</string>
+	<string name="pref_default_startup_title">Default Docset</string>
+	<string name="pref_default_startup_summary">Choose the Docset to show on startup</string>
+	<string name="default_docset_key">default docset</string>
 </resources>

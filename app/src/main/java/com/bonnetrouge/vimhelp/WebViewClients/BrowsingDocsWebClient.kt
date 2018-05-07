@@ -14,7 +14,8 @@ class BrowsingDocsWebClient constructor(val ctx: Context, val quotesGenerator: Q
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         return if (request?.url.toString().startsWith("file:///android_asset/")) {
             super.shouldOverrideUrlLoading(view, request)
-        } else if (request?.url.toString().contains("email-protection")) {
+        } else if (request?.url.toString().contains("email-protection")
+                || request?.url.toString().contains("ftp://ftp.vim.org")) {
             Toast.makeText(ctx, quotesGenerator.getRandomQuote(), Toast.LENGTH_LONG).show()
             true
         } else {

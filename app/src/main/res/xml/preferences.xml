@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<ListPreference
+		android:dialogTitle="@string/pref_default_startup_dialog_title"
+		android:entries="@array/docsets"
+		android:entryValues="@array/default_docset_values"
+		android:defaultValue="neovim"
+		android:key="@string/default_docset_key"
+		android:title="@string/pref_default_startup_title"
+		android:summary="@string/pref_default_startup_summary"
+		/>
+</PreferenceScreen>

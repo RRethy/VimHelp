@@ -5,10 +5,10 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.bonnetrouge.vimhelp.Commons.QuotesGenerator
 import com.bonnetrouge.vimhelp.Commons.app
 import com.bonnetrouge.vimhelp.Commons.fragmentTransaction
@@ -51,8 +51,15 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
-            fragmentTransaction(false) { add(R.id.fragmentContainer, neovimFragment, fragmentTags[1]) }
-            bottomNav.selectedItemId = R.id.item_neovim
+            val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+            if (preferences.getString(getString(R.string.default_docset_key), resources.getStringArray(R.array.default_docset_values)[0])
+                    == resources.getStringArray(R.array.default_docset_values)[0]) {
+                fragmentTransaction(false) { add(R.id.fragmentContainer, neovimFragment, fragmentTags[1]) }
+                bottomNav.selectedItemId = R.id.item_neovim
+            } else {
+                fragmentTransaction(false) { add(R.id.fragmentContainer, vimFragment, fragmentTags[0]) }
+                bottomNav.selectedItemId = R.id.item_vim
+            }
         }
 
         setupBottomNavigation()
@@ -66,7 +73,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menu_settings -> Toast.makeText(this, "Clicked settings", Toast.LENGTH_SHORT).show()
+            R.id.menu_settings -> {
+                SettingsActivity.navigate(this)
+            }
             R.id.menu_search -> {
                 val fragmentTag = if (viewModel.fragmentIndex == 0) VimFragment.TAG else NeovimFragment.TAG
                 SearchActivity.navigate(this, fragmentTag)

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="docsets">
+		<item>@string/neovim</item>
+		<item>@string/vim</item>
+	</string-array>
+	<string-array name="default_docset_values">
+		<item>neovim</item>
+		<item>vim</item>
+	</string-array>
+</resources>
