@@ -21,6 +21,4 @@ class AppModule(val app: VimHelpApp) {
     @Singleton
     @Provides
     fun providesRandomQuoteGenerator() = QuotesGenerator()
-
-
 }
