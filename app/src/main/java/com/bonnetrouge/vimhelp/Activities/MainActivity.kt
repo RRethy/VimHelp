@@ -52,18 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
-            val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-            if (preferences.getString(getString(R.string.default_docset_key), resources.getStringArray(R.array.default_docset_values)[0])
-                    == resources.getStringArray(R.array.default_docset_values)[0]) {
-                fragmentTransaction(false) { add(R.id.fragmentContainer, neovimFragment, fragmentTags[1]) }
-                bottomNav.selectedItemId = R.id.item_neovim
-            } else {
-                fragmentTransaction(false) { add(R.id.fragmentContainer, vimFragment, fragmentTags[0]) }
-                bottomNav.selectedItemId = R.id.item_vim
-            }
-        }
-
+        setupContent(savedInstanceState)
         setupBottomNavigation()
     }
 
@@ -106,6 +95,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupContent(savedInstanceState: Bundle?) {
+        if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+            if (preferences.getString(getString(R.string.default_docset_key), resources.getStringArray(R.array.default_docset_values)[0])
+                    == resources.getStringArray(R.array.default_docset_values)[0]) {
+                fragmentTransaction(false) { add(R.id.fragmentContainer, neovimFragment, fragmentTags[1]) }
+                bottomNav.selectedItemId = R.id.item_neovim
+            } else {
+                fragmentTransaction(false) { add(R.id.fragmentContainer, vimFragment, fragmentTags[0]) }
+                bottomNav.selectedItemId = R.id.item_vim
+            }
+        }
+    }
+
     private fun setupBottomNavigation() {
         bottomNav.setOnNavigationItemSelectedListener {
             val nextFragmentIndex = when (it.itemId) {
@@ -122,5 +125,6 @@ class MainActivity : AppCompatActivity() {
                 show(fragments[viewModel.fragmentIndex])
             }
             true
-        }    }
+        }
+    }
 }
