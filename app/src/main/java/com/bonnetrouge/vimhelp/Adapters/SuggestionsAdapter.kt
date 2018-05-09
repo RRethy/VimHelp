@@ -9,6 +9,7 @@ import com.bonnetrouge.vimhelp.Activities.SearchActivity
 import com.bonnetrouge.vimhelp.Commons.bindView
 import com.bonnetrouge.vimhelp.R
 import com.bonnetrouge.vimhelp.Tags.Tag
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class SuggestionsAdapter(val searchActivity: SearchActivity) : RecyclerView.Adapter<SuggestionsAdapter.SuggestionViewHolder>() {
@@ -30,7 +31,8 @@ class SuggestionsAdapter(val searchActivity: SearchActivity) : RecyclerView.Adap
         val suggestionTag: TextView by bindView(R.id.suggestionTag)
         val suggestionFileName: TextView by bindView(R.id.suggestionFileName)
 
-        val pattern: Pattern = Pattern.compile("file:///android_asset/.*/(.*).html#.*")
+        val neovimPattern: Pattern = Pattern.compile("file:///android_asset/.*/(.*).html#.*")
+        val vimPattern: Pattern = Pattern.compile("file:///android_asset/.*/(.*).txt.html#.*")
 
         init {
             view.setOnClickListener { searchActivity.onSuggestionClicked(suggestions[adapterPosition]) }
@@ -38,7 +40,11 @@ class SuggestionsAdapter(val searchActivity: SearchActivity) : RecyclerView.Adap
 
         fun onBind(tag: Tag) {
             suggestionTag.text = tag.tag
-            val matcher = pattern.matcher(tag.uri)
+            val matcher = if (tag.uri.contains(".txt")) { // Vim docs have the suffix .txt.html
+                vimPattern.matcher(tag.uri)
+            } else { // Neovim docs only have the suffix .html
+                neovimPattern.matcher(tag.uri)
+            }
             if (matcher.find()) {
                 suggestionFileName.text = String.format("%s.txt", matcher.group(1))
             }
