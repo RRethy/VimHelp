@@ -32,7 +32,7 @@ class VimFragment : Fragment(), OnNavigationListener {
         setupWebView()
 
         if (savedInstanceState == null) {
-            webView.loadUrl("file:///android_asset/vim/help.html")
+            webView.loadUrl("file:///android_asset/vim/help.txt.html")
         } else {
             webView.restoreState(savedInstanceState)
         }
