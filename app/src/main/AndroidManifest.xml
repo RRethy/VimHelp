@@ -28,8 +28,15 @@
 			android:theme="@style/SearchTheme"
 			android:windowSoftInputMode="stateVisible">
 		</activity>
-		<activity android:name=".Activities.SettingsActivity"
+		<activity
+			android:name=".Activities.SettingsActivity"
 			android:label="Settings">
+		</activity>
+		<activity android:name=".Activities.LicenseActivity">
+		</activity>
+		<activity android:name=".Activities.AboutActivity">
+		</activity>
+		<activity android:name=".Activities.DonateActivity">
 		</activity>
 	</application>
 

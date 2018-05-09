@@ -64,14 +64,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menu_settings -> {
-                SettingsActivity.navigate(this)
-            }
             R.id.menu_search -> {
                 val fragmentTag = if (viewModel.fragmentIndex == 0) VimFragment.TAG else NeovimFragment.TAG
                 SearchActivity.navigate(this, fragmentTag)
             }
             R.id.menu_go_forward -> (fragments[viewModel.fragmentIndex] as OnNavigationListener).onForwardPressed()
+            R.id.menu_settings -> SettingsActivity.navigate(this)
+            R.id.menu_donate -> DonateActivity.navigate(this)
+            R.id.menu_license -> LicenseActivity.navigate(this)
+            R.id.menu_about -> AboutActivity.navigate(this)
             android.R.id.home -> onBackPressed()
         }
         return true

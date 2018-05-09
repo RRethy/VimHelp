@@ -3,7 +3,19 @@
 	  xmlns:app="http://schemas.android.com/apk/res-auto">
 	<item
 		android:id="@+id/menu_settings"
-		android:title="settings"
+		android:title="@string/settings"
+		app:showAsAction="never"/>
+	<item
+		android:id="@+id/menu_donate"
+		android:title="@string/donate"
+		app:showAsAction="never"/>
+	<item
+		android:id="@+id/menu_license"
+		android:title="@string/license"
+		app:showAsAction="never"/>
+	<item
+		android:id="@+id/menu_about"
+		android:title="@string/about"
 		app:showAsAction="never"/>
 	<item
 		android:id="@+id/menu_search"
