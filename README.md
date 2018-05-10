@@ -10,6 +10,10 @@ An Android app for browsing vim/neovim docs offline
 
 ## Check it out! ##
 
+<img src="https://user-images.githubusercontent.com/21000943/39850116-894e3bcc-53c4-11e8-9ef1-3535294afeef.png" width="250" height="444" title="neovimdocs_ss"> <img src="https://user-images.githubusercontent.com/21000943/39850115-89346aa8-53c4-11e8-8dfa-ab7f026f940e.png" width="250" height="444" title="vimdocs_ss"> <img src="https://user-images.githubusercontent.com/21000943/39850114-89054caa-53c4-11e8-982d-6930def5c2da.png" width="250" height="444" title="search_ss">
+
+## Features ##
+
 LICENSE
 =======
 
