@@ -2,9 +2,9 @@
 
 <img src="https://user-images.githubusercontent.com/21000943/39851143-2ebd214a-53ca-11e8-9bdc-17ab733c5f88.png" width="180" height="180" title="app_icon">
 
-> Toto, I've got a feeling we're not in Vi anymore (Dorothy Gale, Kansas)
+<a href="https://play.google.com/store/apps/details?id=com.bonnetrouge.vimhelp" alt="Play Store Release"><img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="215" height="83" title="Play Store"/></a>
 
-An Android app for browsing vim/neovim docs offline
+> Toto, I've got a feeling we're not in Vi anymore (Dorothy Gale, Kansas)
 
 ## Table of Contents ##
 
