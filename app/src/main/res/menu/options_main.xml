@@ -14,10 +14,6 @@
 		android:title="@string/license"
 		app:showAsAction="never"/>
 	<item
-		android:id="@+id/menu_about"
-		android:title="@string/about"
-		app:showAsAction="never"/>
-	<item
 		android:id="@+id/menu_search"
 		android:title="search"
 		android:icon="@drawable/ic_search_white_24dp"

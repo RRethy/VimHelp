@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_settings -> SettingsActivity.navigate(this)
             R.id.menu_donate -> DonateActivity.navigate(this)
             R.id.menu_license -> LicenseActivity.navigate(this)
-            R.id.menu_about -> AboutActivity.navigate(this)
             android.R.id.home -> onBackPressed()
         }
         return true
