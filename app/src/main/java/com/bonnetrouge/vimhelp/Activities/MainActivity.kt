@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_go_forward -> (fragments[viewModel.fragmentIndex] as OnNavigationListener).onForwardPressed()
             R.id.menu_settings -> SettingsActivity.navigate(this)
-            R.id.menu_donate -> DonateActivity.navigate(this)
             R.id.menu_license -> LicenseActivity.navigate(this)
             android.R.id.home -> onBackPressed()
         }

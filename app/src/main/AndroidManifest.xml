@@ -34,8 +34,6 @@
 		</activity>
 		<activity android:name=".Activities.LicenseActivity">
 		</activity>
-		<activity android:name=".Activities.DonateActivity">
-		</activity>
 	</application>
 
 </manifest>

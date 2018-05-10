@@ -6,10 +6,6 @@
 		android:title="@string/settings"
 		app:showAsAction="never"/>
 	<item
-		android:id="@+id/menu_donate"
-		android:title="@string/donate"
-		app:showAsAction="never"/>
-	<item
 		android:id="@+id/menu_license"
 		android:title="@string/license"
 		app:showAsAction="never"/>
