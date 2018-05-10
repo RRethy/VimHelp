@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setupContent(savedInstanceState)
+        setupContent()
         setupBottomNavigation()
     }
 
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupContent(savedInstanceState: Bundle?) {
+    private fun setupContent() {
         if (supportFragmentManager.findFragmentById(R.id.fragmentContainer) == null) {
             val preferences = PreferenceManager.getDefaultSharedPreferences(this)
             if (preferences.getString(getString(R.string.default_docset_key), resources.getStringArray(R.array.default_docset_values)[0])
