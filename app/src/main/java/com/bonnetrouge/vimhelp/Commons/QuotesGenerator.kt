@@ -43,7 +43,7 @@ class QuotesGenerator {
     }
 
     fun getRandomQuote(): String {
-        val n = randnum.nextInt(26 + 1)
-        return quotes[n - 1]
+        val n = randnum.nextInt(quotes.size)
+        return quotes[n]
     }
 }
