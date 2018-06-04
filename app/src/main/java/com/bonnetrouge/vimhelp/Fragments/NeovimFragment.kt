@@ -68,6 +68,6 @@ class NeovimFragment : Fragment(), OnNavigationListener {
         webView.webViewClient = browsingDocsWebClient
     }
     fun updateUrl(url: String?) {
-        url?.let { webView.loadUrl(url) }
+        url?.let { webView?.loadUrl(url) }
     }
 }

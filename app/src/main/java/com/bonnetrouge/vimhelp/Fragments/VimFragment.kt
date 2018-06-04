@@ -70,6 +70,6 @@ class VimFragment : Fragment(), OnNavigationListener {
     }
 
     fun updateUrl(url: String?) {
-        url?.let { webView.loadUrl(url) }
+        url?.let { webView?.loadUrl(url) }
     }
 }
