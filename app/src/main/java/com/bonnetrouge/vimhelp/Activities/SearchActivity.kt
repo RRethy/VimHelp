@@ -18,6 +18,9 @@ import com.bonnetrouge.vimhelp.R
 import com.bonnetrouge.vimhelp.Tags.Tag
 import com.bonnetrouge.vimhelp.Tags.TagsManager
 import kotlinx.android.synthetic.main.activity_search.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newSingleThreadContext
 import javax.inject.Inject
 
 
@@ -41,6 +44,8 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
     private val debounceTextWatcher by lazyAndroid { DebounceTextWatcher(this, 300) }
 
     private val adapter: SuggestionsAdapter by lazyAndroid { SuggestionsAdapter(this) }
+
+    private var filterJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,31 +74,22 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
     }
 
     override fun onDebounced(s: CharSequence) {
-        runOnUiThread {
+        filterJob?.cancel()
+        filterJob = launch {
             val newSuggestions = tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG))
                     .fuzzyFilter(MED_FUZZY, s) { this.tag }
-            if (!newSuggestions.isEmpty()) {
-                hiddenQuote.visibility = View.GONE
-                val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                        return adapter.suggestions[oldItemPosition] == newSuggestions[newItemPosition]
-                    }
+            if (!isActive) return@launch
 
-                    override fun getOldListSize() = adapter.suggestions.size
+            runOnUiThread {
+                if (!newSuggestions.isEmpty()) {
+                    hiddenQuote.visibility = View.GONE
+                    adapter.submitList(newSuggestions)
+                } else {
+                    adapter.submitList(null)
+                    hiddenQuote.visibility = View.VISIBLE
+                    hiddenQuote.text = quotesGenerator.getRandomQuote()
+                }
 
-                    override fun getNewListSize() = newSuggestions.size
-
-                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = true
-                })
-                adapter.suggestions.clear()
-                adapter.suggestions.addAll(newSuggestions)
-                diffResult.dispatchUpdatesTo(adapter)
-            } else {
-                val size = adapter.suggestions.size
-                adapter.suggestions.clear()
-                adapter.notifyItemRangeRemoved(0, size)
-                hiddenQuote.visibility = View.VISIBLE
-                hiddenQuote.text = quotesGenerator.getRandomQuote()
             }
         }
     }
@@ -109,8 +105,7 @@ class SearchActivity : AppCompatActivity(), DebounceTextWatcher.OnDebouncedListe
     private fun setupRecyclerView() {
         completionRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         completionRecyclerView.adapter = adapter
-        adapter.suggestions.addAll(tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)))
-        adapter.notifyItemRangeInserted(0, tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)).size)
+        adapter.submitList(tagsManager.tags(intent.getStringExtra(FRAGMENT_TAG)))
     }
 
     private fun setupSearchEditText() {
